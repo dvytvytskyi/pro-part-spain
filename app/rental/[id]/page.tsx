@@ -23,6 +23,13 @@ import {
   Maximize2,
   Phone,
   Mail,
+  Wifi,
+  Wind,
+  Clock,
+  Euro,
+  Shield,
+  PawPrint,
+  Cigarette,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { ListingsHeader } from "@/components/listings-header"
@@ -34,9 +41,9 @@ import { SimilarProjects } from "@/components/similar-projects"
 import { ShareModal } from "@/components/share-modal"
 import { CollectionModal } from "@/components/collection-modal"
 import { InvestorContactForm } from "@/components/investor-contact-form"
-import type { NewBuilding } from "@/types/new-building"
+import type { Rental } from "@/types/rental"
 
-interface NewBuildingPageProps {
+interface RentalPageProps {
   params: {
     id: string
   }
@@ -68,7 +75,7 @@ function NewsletterSignup() {
     <div>
       <h3 className="text-sm font-medium text-gray-900 mb-3">Stay Updated</h3>
       <p className="text-xs text-gray-600 font-light mb-4 leading-relaxed">
-        Get the latest market insights and exclusive property listings delivered to your inbox.
+        Get the latest rental listings and exclusive property offers delivered to your inbox.
       </p>
 
       {isSubmitted ? (
@@ -101,24 +108,24 @@ function NewsletterSignup() {
   )
 }
 
-export default function NewBuildingPage({ params }: NewBuildingPageProps) {
+export default function RentalPage({ params }: RentalPageProps) {
   const router = useRouter()
-  const [project, setProject] = useState<NewBuilding | null>(null)
+  const [property, setProperty] = useState<Rental | null>(null)
   const [loading, setLoading] = useState(true)
   const [shareModalOpen, setShareModalOpen] = useState(false)
   const [collectionModalOpen, setCollectionModalOpen] = useState(false)
   const [isAuthenticated, setIsAuthenticated] = useState(false) // Mock auth state
 
   useEffect(() => {
-    fetchProject()
+    fetchProperty()
   }, [params.id])
 
-  const fetchProject = async () => {
+  const fetchProperty = async () => {
     try {
       // Mock data - in real app, this would be an API call to Xano
-      const mockProject: NewBuilding = {
+      const mockProperty: Rental = {
         id: params.id,
-        development_name: "Luxury Marina Residences",
+        property_name: "Luxury Beachfront Villa",
         images: [
           "/images/property-1.webp",
           "/images/property-2.webp",
@@ -128,28 +135,26 @@ export default function NewBuildingPage({ params }: NewBuildingPageProps) {
           "/images/property-6.webp",
         ],
         description_uk:
-          "Discover the epitome of luxury living at Marina Residences, an exclusive new development situated in the heart of Marbella's prestigious Golden Mile. This exceptional project offers a collection of contemporary apartments and penthouses, each meticulously designed to provide the ultimate in comfort and sophistication. With panoramic sea views, state-of-the-art amenities, and proximity to world-class dining and shopping, Marina Residences represents the pinnacle of Costa del Sol living. The development features beautifully landscaped gardens, a stunning infinity pool, private beach access, and 24-hour concierge service. Each residence boasts premium finishes, smart home technology, and spacious terraces perfect for entertaining or simply enjoying the Mediterranean lifestyle.",
-        price: 2950000,
-        price_to: 4500000,
+          "Experience the ultimate in luxury living with this stunning beachfront villa located in Marbella's prestigious Golden Mile. This exceptional property offers breathtaking sea views, direct beach access, and world-class amenities. The villa features spacious living areas, a gourmet kitchen, and beautifully appointed bedrooms, each with en-suite bathrooms. Enjoy the private infinity pool, landscaped gardens, and multiple terraces perfect for entertaining or relaxing. The property includes modern amenities such as air conditioning, high-speed WiFi, and a fully equipped gym. Located minutes from Puerto Banús marina, fine dining restaurants, and luxury shopping, this villa represents the pinnacle of Costa del Sol lifestyle.",
+        price_monthly: 4000,
+        price_weekly: 1500,
         currency: "EUR",
-        beds: 2,
-        beds_to: 4,
-        baths: 2,
-        baths_to: 4,
+        beds: 4,
+        baths: 4,
         surface_area: {
-          built: 150,
-          built_to: 280,
-          terrace: 40,
-          terrace_to: 120,
+          built: 280,
+          terrace: 120,
         },
-        completion_date: "2025-06-30",
+        available_from: "2025-02-01",
+        min_stay_months: 1,
+        min_stay_weeks: 1,
         type: {
-          uk: "Apartment",
-          es: "Apartamento",
+          uk: "Villa",
+          es: "Villa",
         },
         subtype: {
-          uk: "Luxury Residence",
-          es: "Residencia de Lujo",
+          uk: "Luxury Villa for Rent",
+          es: "Villa de Lujo en Alquiler",
         },
         country: "Spain",
         province: "Andalusia",
@@ -160,11 +165,17 @@ export default function NewBuildingPage({ params }: NewBuildingPageProps) {
         has_pool: true,
         has_garden: true,
         has_garage: true,
+        has_wifi: true,
+        has_ac: true,
+        utilities_included: true,
+        deposit_amount: 8000,
+        pets_allowed: false,
+        smoking_allowed: false,
       }
 
-      setProject(mockProject)
+      setProperty(mockProperty)
     } catch (error) {
-      console.error("Error fetching project:", error)
+      console.error("Error fetching property:", error)
     } finally {
       setLoading(false)
     }
@@ -186,12 +197,12 @@ export default function NewBuildingPage({ params }: NewBuildingPageProps) {
     setCollectionModalOpen(true)
   }
 
-  const handleRequestFloorPlan = () => {
-    // In real app, this would open a floor plan request modal or form
-    alert("Floor plan request functionality would be implemented here")
+  const handleRequestInfo = () => {
+    // In real app, this would open a request info modal or form
+    alert("Request information functionality would be implemented here")
   }
 
-  const formatPrice = (price: number, priceTo?: number, currency = "EUR") => {
+  const formatPrice = (monthlyPrice: number, weeklyPrice?: number, currency = "EUR") => {
     const formatter = new Intl.NumberFormat("en-US", {
       style: "currency",
       currency: currency,
@@ -199,23 +210,17 @@ export default function NewBuildingPage({ params }: NewBuildingPageProps) {
       maximumFractionDigits: 0,
     })
 
-    if (priceTo && priceTo !== price) {
-      return `${formatter.format(price)} - ${formatter.format(priceTo)}`
+    if (weeklyPrice) {
+      return `Long-term ${formatter.format(monthlyPrice)}/month • Short-term ${formatter.format(weeklyPrice)}/week`
     }
-    return `From ${formatter.format(price)}`
-  }
-
-  const formatRange = (from: number, to?: number, unit = "") => {
-    if (to && to !== from) {
-      return `${from} - ${to}${unit}`
-    }
-    return `${from}${unit}`
+    return `${formatter.format(monthlyPrice)} / month`
   }
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("en-US", {
       year: "numeric",
       month: "long",
+      day: "numeric",
     })
   }
 
@@ -230,13 +235,13 @@ export default function NewBuildingPage({ params }: NewBuildingPageProps) {
     )
   }
 
-  if (!project) {
+  if (!property) {
     return (
       <div className="min-h-screen bg-white">
         <ListingsHeader showSearch={false} showFilters={false} />
         <div className="container mx-auto px-4 py-8">
           <div className="text-center">
-            <h1 className="text-2xl font-bold text-gray-900 mb-4">Project Not Found</h1>
+            <h1 className="text-2xl font-bold text-gray-900 mb-4">Property Not Found</h1>
             <button
               onClick={handleBack}
               className="inline-flex items-center text-gray-600 hover:text-gray-900 transition-colors font-light"
@@ -265,7 +270,7 @@ export default function NewBuildingPage({ params }: NewBuildingPageProps) {
             className="inline-flex items-center text-gray-600 hover:text-gray-900 transition-colors font-light text-sm"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Listings
+            Back to Rentals
           </button>
 
           {/* Action Buttons */}
@@ -297,61 +302,58 @@ export default function NewBuildingPage({ params }: NewBuildingPageProps) {
             Real Estate
           </Link>
           <ChevronRight className="h-3 w-3" />
-          <Link href={`/listings?country=${project.country}`} className="hover:text-gray-700">
-            {project.country}
+          <Link href="/rentals" className="hover:text-gray-700">
+            Rentals
           </Link>
           <ChevronRight className="h-3 w-3" />
-          <Link href={`/listings?province=${project.province}`} className="hover:text-gray-700">
-            {project.province}
+          <Link href={`/rentals?country=${property.country}`} className="hover:text-gray-700">
+            {property.country}
           </Link>
           <ChevronRight className="h-3 w-3" />
-          <Link href={`/listings?town=${project.town}`} className="hover:text-gray-700">
-            {project.town}
+          <Link href={`/rentals?province=${property.province}`} className="hover:text-gray-700">
+            {property.province}
           </Link>
           <ChevronRight className="h-3 w-3" />
-          <span className="text-gray-900">{project.development_name}</span>
+          <Link href={`/rentals?town=${property.town}`} className="hover:text-gray-700">
+            {property.town}
+          </Link>
+          <ChevronRight className="h-3 w-3" />
+          <span className="text-gray-900">{property.property_name}</span>
         </nav>
 
         {/* Main Content */}
         <div className="space-y-6 mb-8">
           {/* Gallery - Full Width */}
-          <NewBuildingGallery
-            images={project.images}
-            projectName={project.development_name}
-            onSave={handleSave}
-            onRequestFloorPlan={handleRequestFloorPlan}
-          />
+          <NewBuildingGallery images={property.images} projectName={property.property_name} onSave={handleSave} />
 
-          {/* Content Grid - Project Details + Contact Form */}
+          {/* Content Grid - Property Details + Contact Form */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Left Column - Project Details */}
+            {/* Left Column - Property Details */}
             <div className="lg:col-span-2 space-y-5">
-              {/* Project Header */}
+              {/* Property Header */}
               <div className="space-y-2">
-                <h1 className="text-2xl lg:text-3xl font-light text-gray-900">{project.development_name}</h1>
+                <h1 className="text-2xl lg:text-3xl font-light text-gray-900">{property.property_name}</h1>
 
                 <div className="text-xl lg:text-2xl font-light text-gray-900">
-                  {formatPrice(project.price, project.price_to, project.currency)}
+                  {formatPrice(property.price_monthly, property.price_weekly, property.currency)}
                 </div>
 
                 <div className="flex items-center text-gray-600">
                   <MapPin className="h-4 w-4 mr-2" />
                   <span className="text-base">
-                    {project.area}, {project.town}, {project.province}, {project.country}
+                    {property.area}, {property.town}, {property.province}, {property.country}
                   </span>
                 </div>
               </div>
 
-              {/* Summary Block */}
+              {/* Property Summary */}
               <div className="bg-gray-50 rounded-xl p-4">
-                <h3 className="text-lg font-medium text-gray-900 mb-3">Project Summary</h3>
+                <h3 className="text-lg font-medium text-gray-900 mb-3">Property Summary</h3>
                 <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
                   <div className="flex items-center space-x-2">
                     <Bed className="h-4 w-4 text-gray-500 flex-shrink-0" />
                     <div>
-                      <div className="font-medium text-gray-900 text-sm">
-                        {formatRange(project.beds, project.beds_to)}
-                      </div>
+                      <div className="font-medium text-gray-900 text-sm">{property.beds}</div>
                       <div className="text-xs text-gray-600">Bedrooms</div>
                     </div>
                   </div>
@@ -359,9 +361,7 @@ export default function NewBuildingPage({ params }: NewBuildingPageProps) {
                   <div className="flex items-center space-x-2">
                     <Bath className="h-4 w-4 text-gray-500 flex-shrink-0" />
                     <div>
-                      <div className="font-medium text-gray-900 text-sm">
-                        {formatRange(project.baths, project.baths_to)}
-                      </div>
+                      <div className="font-medium text-gray-900 text-sm">{property.baths}</div>
                       <div className="text-xs text-gray-600">Bathrooms</div>
                     </div>
                   </div>
@@ -369,31 +369,27 @@ export default function NewBuildingPage({ params }: NewBuildingPageProps) {
                   <div className="flex items-center space-x-2">
                     <Square className="h-4 w-4 text-gray-500 flex-shrink-0" />
                     <div>
-                      <div className="font-medium text-gray-900 text-sm">
-                        {formatRange(project.surface_area.built, project.surface_area.built_to, "m²")}
-                      </div>
+                      <div className="font-medium text-gray-900 text-sm">{property.surface_area.built}m²</div>
                       <div className="text-xs text-gray-600">Built Area</div>
                     </div>
                   </div>
 
-                  {project.surface_area.terrace && (
+                  {property.surface_area.terrace && (
                     <div className="flex items-center space-x-2">
                       <Maximize2 className="h-4 w-4 text-gray-500 flex-shrink-0" />
                       <div>
-                        <div className="font-medium text-gray-900 text-sm">
-                          {formatRange(project.surface_area.terrace, project.surface_area.terrace_to, "m²")}
-                        </div>
+                        <div className="font-medium text-gray-900 text-sm">{property.surface_area.terrace}m²</div>
                         <div className="text-xs text-gray-600">Terrace</div>
                       </div>
                     </div>
                   )}
 
-                  {project.completion_date && (
+                  {property.available_from && (
                     <div className="flex items-center space-x-2">
                       <Calendar className="h-4 w-4 text-gray-500 flex-shrink-0" />
                       <div>
-                        <div className="font-medium text-gray-900 text-sm">{formatDate(project.completion_date)}</div>
-                        <div className="text-xs text-gray-600">Completion</div>
+                        <div className="font-medium text-gray-900 text-sm">{formatDate(property.available_from)}</div>
+                        <div className="text-xs text-gray-600">Available from</div>
                       </div>
                     </div>
                   )}
@@ -401,67 +397,128 @@ export default function NewBuildingPage({ params }: NewBuildingPageProps) {
                   <div className="flex items-center space-x-2">
                     <Home className="h-4 w-4 text-[#C9A77C] flex-shrink-0" />
                     <div>
-                      <div className="font-medium text-gray-900 text-sm">{project.type.uk}</div>
-                      <div className="text-xs text-gray-600">{project.subtype.uk}</div>
+                      <div className="font-medium text-gray-900 text-sm">{property.type.uk}</div>
+                      <div className="text-xs text-gray-600">{property.subtype.uk}</div>
                     </div>
                   </div>
+
+                  {(property.min_stay_months || property.min_stay_weeks) && (
+                    <div className="flex items-center space-x-2">
+                      <Clock className="h-4 w-4 text-gray-500 flex-shrink-0" />
+                      <div>
+                        <div className="font-medium text-gray-900 text-sm">
+                          {property.min_stay_months
+                            ? `${property.min_stay_months} month`
+                            : `${property.min_stay_weeks} week`}
+                        </div>
+                        <div className="text-xs text-gray-600">Min. stay</div>
+                      </div>
+                    </div>
+                  )}
+
+                  {property.deposit_amount && (
+                    <div className="flex items-center space-x-2">
+                      <Euro className="h-4 w-4 text-gray-500 flex-shrink-0" />
+                      <div>
+                        <div className="font-medium text-gray-900 text-sm">
+                          €{property.deposit_amount.toLocaleString()}
+                        </div>
+                        <div className="text-xs text-gray-600">Security Deposit</div>
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* Amenities */}
-                {(project.has_pool || project.has_garden || project.has_garage) && (
-                  <div className="mt-4 pt-4 border-t border-gray-200">
-                    <h4 className="text-base font-medium text-gray-900 mb-2">Amenities</h4>
-                    <div className="flex flex-wrap gap-2">
-                      {project.has_pool && (
-                        <div className="flex items-center space-x-1 px-2 py-1 bg-blue-50 text-blue-700 rounded-lg">
-                          <Waves className="h-3 w-3 flex-shrink-0" />
-                          <span className="text-xs">Pool</span>
-                        </div>
-                      )}
-                      {project.has_garden && (
-                        <div className="flex items-center space-x-1 px-2 py-1 bg-green-50 text-green-700 rounded-lg">
-                          <TreePine className="h-3 w-3 flex-shrink-0" />
-                          <span className="text-xs">Garden</span>
-                        </div>
-                      )}
-                      {project.has_garage && (
-                        <div className="flex items-center space-x-1 px-2 py-1 bg-gray-50 text-gray-700 rounded-lg">
-                          <Car className="h-3 w-3 flex-shrink-0" />
-                          <span className="text-xs">Garage</span>
-                        </div>
-                      )}
-                    </div>
+                <div className="mt-4 pt-4 border-t border-gray-200">
+                  <h4 className="text-base font-medium text-gray-900 mb-2">Amenities</h4>
+                  <div className="flex flex-wrap gap-2">
+                    {property.has_pool && (
+                      <div className="flex items-center space-x-1 px-2 py-1 bg-blue-50 text-blue-700 rounded-lg">
+                        <Waves className="h-3 w-3 flex-shrink-0" />
+                        <span className="text-xs">Pool</span>
+                      </div>
+                    )}
+                    {property.has_garden && (
+                      <div className="flex items-center space-x-1 px-2 py-1 bg-green-50 text-green-700 rounded-lg">
+                        <TreePine className="h-3 w-3 flex-shrink-0" />
+                        <span className="text-xs">Garden</span>
+                      </div>
+                    )}
+                    {property.has_garage && (
+                      <div className="flex items-center space-x-1 px-2 py-1 bg-gray-50 text-gray-700 rounded-lg">
+                        <Car className="h-3 w-3 flex-shrink-0" />
+                        <span className="text-xs">Garage</span>
+                      </div>
+                    )}
+                    {property.has_wifi && (
+                      <div className="flex items-center space-x-1 px-2 py-1 bg-purple-50 text-purple-700 rounded-lg">
+                        <Wifi className="h-3 w-3 flex-shrink-0" />
+                        <span className="text-xs">WiFi</span>
+                      </div>
+                    )}
+                    {property.has_ac && (
+                      <div className="flex items-center space-x-1 px-2 py-1 bg-cyan-50 text-cyan-700 rounded-lg">
+                        <Wind className="h-3 w-3 flex-shrink-0" />
+                        <span className="text-xs">A/C</span>
+                      </div>
+                    )}
                   </div>
-                )}
+                </div>
+
+                {/* Rental Terms */}
+                <div className="mt-4 pt-4 border-t border-gray-200">
+                  <h4 className="text-base font-medium text-gray-900 mb-2">Rental Terms</h4>
+                  <div className="flex flex-wrap gap-2">
+                    {property.utilities_included && (
+                      <div className="flex items-center space-x-1 px-2 py-1 bg-green-50 text-green-700 rounded-lg">
+                        <Shield className="h-3 w-3 flex-shrink-0" />
+                        <span className="text-xs">Utilities Included</span>
+                      </div>
+                    )}
+                    {!property.pets_allowed && (
+                      <div className="flex items-center space-x-1 px-2 py-1 bg-red-50 text-red-700 rounded-lg">
+                        <PawPrint className="h-3 w-3 flex-shrink-0" />
+                        <span className="text-xs">No Pets</span>
+                      </div>
+                    )}
+                    {!property.smoking_allowed && (
+                      <div className="flex items-center space-x-1 px-2 py-1 bg-red-50 text-red-700 rounded-lg">
+                        <Cigarette className="h-3 w-3 flex-shrink-0" />
+                        <span className="text-xs">No Smoking</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
 
               {/* Description */}
-              {project.description_uk && (
+              {property.description_uk && (
                 <div className="space-y-3">
-                  <h3 className="text-lg font-medium text-gray-900">About This Project</h3>
+                  <h3 className="text-lg font-medium text-gray-900">About this Rental</h3>
                   <div className="prose prose-gray max-w-none">
-                    <p className="text-gray-700 leading-relaxed text-sm">{project.description_uk}</p>
+                    <p className="text-gray-700 leading-relaxed text-sm">{property.description_uk}</p>
                   </div>
                 </div>
               )}
 
               {/* Map */}
               <ProjectMap
-                latitude={project.latitude}
-                longitude={project.longitude}
-                projectName={project.development_name}
+                latitude={property.latitude}
+                longitude={property.longitude}
+                projectName={property.property_name}
               />
             </div>
 
             {/* Right Column - Contact Form */}
             <div className="lg:col-span-1">
-              <ContactForm projectName={project.development_name} />
+              <ContactForm projectName={property.property_name} />
             </div>
           </div>
         </div>
 
-        {/* Similar Projects */}
-        <SimilarProjects currentProject={project} />
+        {/* Similar Properties */}
+        <SimilarProjects currentProject={property} />
       </main>
 
       {/* Investor Contact Section */}
@@ -483,13 +540,13 @@ export default function NewBuildingPage({ params }: NewBuildingPageProps) {
 
               {/* Floating Stats Cards */}
               <div className="absolute -bottom-6 -left-6 bg-white rounded-2xl p-4 shadow-[0_8px_24px_rgba(0,0,0,0.12)]">
-                <div className="text-2xl font-light text-gray-900">€2.4B+</div>
-                <div className="text-xs text-gray-600 font-light">Properties Sold</div>
+                <div className="text-2xl font-light text-gray-900">1000+</div>
+                <div className="text-xs text-gray-600 font-light">Properties Rented</div>
               </div>
 
               <div className="absolute -top-6 -right-6 bg-black rounded-2xl p-4 text-white">
                 <div className="text-2xl font-light">500+</div>
-                <div className="text-xs text-white/80 font-light">Happy Investors</div>
+                <div className="text-xs text-white/80 font-light">Happy Tenants</div>
               </div>
 
               <div className="absolute top-1/2 -left-8 bg-white rounded-2xl p-4 shadow-[0_8px_24px_rgba(0,0,0,0.12)]">
@@ -502,11 +559,11 @@ export default function NewBuildingPage({ params }: NewBuildingPageProps) {
             <div className="lg:pl-8">
               <div className="mb-8">
                 <h2 className="text-3xl md:text-4xl font-light text-gray-900 mb-4 tracking-tight">
-                  Ready to Invest in Marbella?
+                  Looking for the Perfect Rental?
                 </h2>
                 <p className="text-sm text-gray-600 font-light leading-relaxed max-w-md">
-                  Connect with our expert team to explore exclusive investment opportunities in Costa del Sol's luxury
-                  real estate market.
+                  Connect with our rental specialists to find your ideal property in Costa del Sol's most desirable
+                  locations.
                 </p>
               </div>
 
@@ -519,7 +576,7 @@ export default function NewBuildingPage({ params }: NewBuildingPageProps) {
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                  <span>Confidential Consultation</span>
+                  <span>Property Viewing Available</span>
                 </div>
               </div>
             </div>
@@ -537,8 +594,8 @@ export default function NewBuildingPage({ params }: NewBuildingPageProps) {
                 <Image src="/images/logo.png" alt="PRO PART" fill className="object-contain" />
               </div>
               <p className="text-sm text-gray-600 font-light leading-relaxed mb-6 max-w-md">
-                Your trusted partner in finding exceptional properties on the Costa del Sol and beyond. Specializing in
-                luxury real estate investments and sales.
+                Your trusted partner in finding exceptional rental properties on the Costa del Sol and beyond.
+                Specializing in luxury vacation rentals and long-term leases.
               </p>
 
               {/* Contact Info */}
@@ -567,11 +624,11 @@ export default function NewBuildingPage({ params }: NewBuildingPageProps) {
 
             {/* Properties */}
             <div>
-              <h3 className="text-sm font-medium text-gray-900 mb-4">Properties</h3>
+              <h3 className="text-sm font-medium text-gray-900 mb-4">Rentals</h3>
               <ul className="space-y-3">
                 <li>
                   <Link
-                    href="/listings?category=luxury-villas"
+                    href="/rentals?category=luxury-villas"
                     className="text-xs text-gray-600 hover:text-gray-900 font-light transition-colors"
                   >
                     Luxury Villas
@@ -579,7 +636,7 @@ export default function NewBuildingPage({ params }: NewBuildingPageProps) {
                 </li>
                 <li>
                   <Link
-                    href="/listings?category=penthouses"
+                    href="/rentals?category=penthouses"
                     className="text-xs text-gray-600 hover:text-gray-900 font-light transition-colors"
                   >
                     Penthouses
@@ -587,7 +644,7 @@ export default function NewBuildingPage({ params }: NewBuildingPageProps) {
                 </li>
                 <li>
                   <Link
-                    href="/listings?category=apartments"
+                    href="/rentals?category=apartments"
                     className="text-xs text-gray-600 hover:text-gray-900 font-light transition-colors"
                   >
                     Apartments
@@ -595,18 +652,18 @@ export default function NewBuildingPage({ params }: NewBuildingPageProps) {
                 </li>
                 <li>
                   <Link
-                    href="/listings?category=new-developments"
+                    href="/rentals?category=beachfront"
                     className="text-xs text-gray-600 hover:text-gray-900 font-light transition-colors"
                   >
-                    New Developments
+                    Beachfront Properties
                   </Link>
                 </li>
                 <li>
                   <Link
-                    href="/listings?category=investment"
+                    href="/rentals?category=short-term"
                     className="text-xs text-gray-600 hover:text-gray-900 font-light transition-colors"
                   >
-                    Investment Properties
+                    Short-term Rentals
                   </Link>
                 </li>
               </ul>
@@ -618,7 +675,7 @@ export default function NewBuildingPage({ params }: NewBuildingPageProps) {
               <ul className="space-y-3">
                 <li>
                   <Link
-                    href="/listings?area=marbella"
+                    href="/rentals?area=marbella"
                     className="text-xs text-gray-600 hover:text-gray-900 font-light transition-colors"
                   >
                     Marbella
@@ -626,7 +683,7 @@ export default function NewBuildingPage({ params }: NewBuildingPageProps) {
                 </li>
                 <li>
                   <Link
-                    href="/listings?area=golden-mile"
+                    href="/rentals?area=golden-mile"
                     className="text-xs text-gray-600 hover:text-gray-900 font-light transition-colors"
                   >
                     Golden Mile
@@ -634,7 +691,7 @@ export default function NewBuildingPage({ params }: NewBuildingPageProps) {
                 </li>
                 <li>
                   <Link
-                    href="/listings?area=puerto-banus"
+                    href="/rentals?area=puerto-banus"
                     className="text-xs text-gray-600 hover:text-gray-900 font-light transition-colors"
                   >
                     Puerto Banús
@@ -642,7 +699,7 @@ export default function NewBuildingPage({ params }: NewBuildingPageProps) {
                 </li>
                 <li>
                   <Link
-                    href="/listings?area=nueva-andalucia"
+                    href="/rentals?area=nueva-andalucia"
                     className="text-xs text-gray-600 hover:text-gray-900 font-light transition-colors"
                   >
                     Nueva Andalucía
@@ -650,7 +707,7 @@ export default function NewBuildingPage({ params }: NewBuildingPageProps) {
                 </li>
                 <li>
                   <Link
-                    href="/listings?area=estepona"
+                    href="/rentals?area=estepona"
                     className="text-xs text-gray-600 hover:text-gray-900 font-light transition-colors"
                   >
                     Estepona
@@ -692,14 +749,14 @@ export default function NewBuildingPage({ params }: NewBuildingPageProps) {
       <ShareModal
         isOpen={shareModalOpen}
         onClose={() => setShareModalOpen(false)}
-        projectName={project.development_name}
+        projectName={property.property_name}
         projectUrl={currentUrl}
       />
 
       <CollectionModal
         isOpen={collectionModalOpen}
         onClose={() => setCollectionModalOpen(false)}
-        projectName={project.development_name}
+        projectName={property.property_name}
         isAuthenticated={isAuthenticated}
       />
     </div>

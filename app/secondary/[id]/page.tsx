@@ -11,7 +11,6 @@ import {
   Bed,
   Bath,
   Square,
-  Calendar,
   MapPin,
   Waves,
   TreePine,
@@ -23,20 +22,20 @@ import {
   Maximize2,
   Phone,
   Mail,
+  Calendar,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { ListingsHeader } from "@/components/listings-header"
 import { LoadingSpinner } from "@/components/loading-spinner"
 import { NewBuildingGallery } from "@/components/new-building-gallery"
 import { ContactForm } from "@/components/contact-form"
-import { ProjectMap } from "@/components/project-map"
 import { SimilarProjects } from "@/components/similar-projects"
 import { ShareModal } from "@/components/share-modal"
 import { CollectionModal } from "@/components/collection-modal"
 import { InvestorContactForm } from "@/components/investor-contact-form"
-import type { NewBuilding } from "@/types/new-building"
+import type { Secondary } from "@/types/secondary"
 
-interface NewBuildingPageProps {
+interface SecondaryPageProps {
   params: {
     id: string
   }
@@ -101,24 +100,24 @@ function NewsletterSignup() {
   )
 }
 
-export default function NewBuildingPage({ params }: NewBuildingPageProps) {
+export default function SecondaryPage({ params }: SecondaryPageProps) {
   const router = useRouter()
-  const [project, setProject] = useState<NewBuilding | null>(null)
+  const [property, setProperty] = useState<Secondary | null>(null)
   const [loading, setLoading] = useState(true)
   const [shareModalOpen, setShareModalOpen] = useState(false)
   const [collectionModalOpen, setCollectionModalOpen] = useState(false)
   const [isAuthenticated, setIsAuthenticated] = useState(false) // Mock auth state
 
   useEffect(() => {
-    fetchProject()
+    fetchProperty()
   }, [params.id])
 
-  const fetchProject = async () => {
+  const fetchProperty = async () => {
     try {
       // Mock data - in real app, this would be an API call to Xano
-      const mockProject: NewBuilding = {
+      const mockProperty: Secondary = {
         id: params.id,
-        development_name: "Luxury Marina Residences",
+        property_name: "Elegant Beachfront Villa",
         images: [
           "/images/property-1.webp",
           "/images/property-2.webp",
@@ -128,28 +127,27 @@ export default function NewBuildingPage({ params }: NewBuildingPageProps) {
           "/images/property-6.webp",
         ],
         description_uk:
-          "Discover the epitome of luxury living at Marina Residences, an exclusive new development situated in the heart of Marbella's prestigious Golden Mile. This exceptional project offers a collection of contemporary apartments and penthouses, each meticulously designed to provide the ultimate in comfort and sophistication. With panoramic sea views, state-of-the-art amenities, and proximity to world-class dining and shopping, Marina Residences represents the pinnacle of Costa del Sol living. The development features beautifully landscaped gardens, a stunning infinity pool, private beach access, and 24-hour concierge service. Each residence boasts premium finishes, smart home technology, and spacious terraces perfect for entertaining or simply enjoying the Mediterranean lifestyle.",
-        price: 2950000,
-        price_to: 4500000,
+          "Experience luxury living in this stunning beachfront villa located in the prestigious Golden Mile of Marbella. This exceptional property offers breathtaking sea views, premium finishes, and direct beach access. The villa features spacious living areas, a modern kitchen, elegant bedrooms with en-suite bathrooms, and beautifully landscaped gardens. Perfect for those seeking the ultimate Mediterranean lifestyle with world-class amenities including a private pool, garage, and proximity to Marbella's finest restaurants and shopping. This property represents a rare opportunity to own a piece of paradise on the Costa del Sol.",
+        price: 3950000,
+        price_to: 4200000,
         currency: "EUR",
-        beds: 2,
-        beds_to: 4,
-        baths: 2,
-        baths_to: 4,
+        beds: 4,
+        beds_to: 5,
+        baths: 4,
+        baths_to: 5,
         surface_area: {
-          built: 150,
-          built_to: 280,
-          terrace: 40,
+          built: 350,
+          built_to: 420,
+          terrace: 80,
           terrace_to: 120,
         },
-        completion_date: "2025-06-30",
         type: {
-          uk: "Apartment",
-          es: "Apartamento",
+          uk: "Villa",
+          es: "Villa",
         },
         subtype: {
-          uk: "Luxury Residence",
-          es: "Residencia de Lujo",
+          uk: "Luxury Beachfront",
+          es: "Lujo Primera Línea",
         },
         country: "Spain",
         province: "Andalusia",
@@ -160,11 +158,12 @@ export default function NewBuildingPage({ params }: NewBuildingPageProps) {
         has_pool: true,
         has_garden: true,
         has_garage: true,
+        year_built: 2018,
       }
 
-      setProject(mockProject)
+      setProperty(mockProperty)
     } catch (error) {
-      console.error("Error fetching project:", error)
+      console.error("Error fetching property:", error)
     } finally {
       setLoading(false)
     }
@@ -202,7 +201,7 @@ export default function NewBuildingPage({ params }: NewBuildingPageProps) {
     if (priceTo && priceTo !== price) {
       return `${formatter.format(price)} - ${formatter.format(priceTo)}`
     }
-    return `From ${formatter.format(price)}`
+    return formatter.format(price)
   }
 
   const formatRange = (from: number, to?: number, unit = "") => {
@@ -210,13 +209,6 @@ export default function NewBuildingPage({ params }: NewBuildingPageProps) {
       return `${from} - ${to}${unit}`
     }
     return `${from}${unit}`
-  }
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "long",
-    })
   }
 
   if (loading) {
@@ -230,13 +222,13 @@ export default function NewBuildingPage({ params }: NewBuildingPageProps) {
     )
   }
 
-  if (!project) {
+  if (!property) {
     return (
       <div className="min-h-screen bg-white">
         <ListingsHeader showSearch={false} showFilters={false} />
         <div className="container mx-auto px-4 py-8">
           <div className="text-center">
-            <h1 className="text-2xl font-bold text-gray-900 mb-4">Project Not Found</h1>
+            <h1 className="text-2xl font-bold text-gray-900 mb-4">Property Not Found</h1>
             <button
               onClick={handleBack}
               className="inline-flex items-center text-gray-600 hover:text-gray-900 transition-colors font-light"
@@ -297,60 +289,64 @@ export default function NewBuildingPage({ params }: NewBuildingPageProps) {
             Real Estate
           </Link>
           <ChevronRight className="h-3 w-3" />
-          <Link href={`/listings?country=${project.country}`} className="hover:text-gray-700">
-            {project.country}
+          <Link href="/secondary" className="hover:text-gray-700">
+            Secondary Market
           </Link>
           <ChevronRight className="h-3 w-3" />
-          <Link href={`/listings?province=${project.province}`} className="hover:text-gray-700">
-            {project.province}
+          <Link href={`/listings?country=${property.country}`} className="hover:text-gray-700">
+            {property.country}
           </Link>
           <ChevronRight className="h-3 w-3" />
-          <Link href={`/listings?town=${project.town}`} className="hover:text-gray-700">
-            {project.town}
+          <Link href={`/listings?province=${property.province}`} className="hover:text-gray-700">
+            {property.province}
           </Link>
           <ChevronRight className="h-3 w-3" />
-          <span className="text-gray-900">{project.development_name}</span>
+          <Link href={`/listings?town=${property.town}`} className="hover:text-gray-700">
+            {property.town}
+          </Link>
+          <ChevronRight className="h-3 w-3" />
+          <span className="text-gray-900">{property.property_name}</span>
         </nav>
 
         {/* Main Content */}
         <div className="space-y-6 mb-8">
           {/* Gallery - Full Width */}
           <NewBuildingGallery
-            images={project.images}
-            projectName={project.development_name}
+            images={property.images}
+            projectName={property.property_name}
             onSave={handleSave}
             onRequestFloorPlan={handleRequestFloorPlan}
           />
 
-          {/* Content Grid - Project Details + Contact Form */}
+          {/* Content Grid - Property Details + Contact Form */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Left Column - Project Details */}
+            {/* Left Column - Property Details */}
             <div className="lg:col-span-2 space-y-5">
-              {/* Project Header */}
+              {/* Property Header */}
               <div className="space-y-2">
-                <h1 className="text-2xl lg:text-3xl font-light text-gray-900">{project.development_name}</h1>
+                <h1 className="text-2xl lg:text-3xl font-light text-gray-900">{property.property_name}</h1>
 
                 <div className="text-xl lg:text-2xl font-light text-gray-900">
-                  {formatPrice(project.price, project.price_to, project.currency)}
+                  {formatPrice(property.price, property.price_to, property.currency)}
                 </div>
 
                 <div className="flex items-center text-gray-600">
                   <MapPin className="h-4 w-4 mr-2" />
                   <span className="text-base">
-                    {project.area}, {project.town}, {project.province}, {project.country}
+                    {property.area}, {property.town}, {property.province}, {property.country}
                   </span>
                 </div>
               </div>
 
               {/* Summary Block */}
               <div className="bg-gray-50 rounded-xl p-4">
-                <h3 className="text-lg font-medium text-gray-900 mb-3">Project Summary</h3>
+                <h3 className="text-lg font-medium text-gray-900 mb-3">Property Summary</h3>
                 <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
                   <div className="flex items-center space-x-2">
                     <Bed className="h-4 w-4 text-gray-500 flex-shrink-0" />
                     <div>
                       <div className="font-medium text-gray-900 text-sm">
-                        {formatRange(project.beds, project.beds_to)}
+                        {formatRange(property.beds, property.beds_to)}
                       </div>
                       <div className="text-xs text-gray-600">Bedrooms</div>
                     </div>
@@ -360,7 +356,7 @@ export default function NewBuildingPage({ params }: NewBuildingPageProps) {
                     <Bath className="h-4 w-4 text-gray-500 flex-shrink-0" />
                     <div>
                       <div className="font-medium text-gray-900 text-sm">
-                        {formatRange(project.baths, project.baths_to)}
+                        {formatRange(property.baths, property.baths_to)}
                       </div>
                       <div className="text-xs text-gray-600">Bathrooms</div>
                     </div>
@@ -370,30 +366,30 @@ export default function NewBuildingPage({ params }: NewBuildingPageProps) {
                     <Square className="h-4 w-4 text-gray-500 flex-shrink-0" />
                     <div>
                       <div className="font-medium text-gray-900 text-sm">
-                        {formatRange(project.surface_area.built, project.surface_area.built_to, "m²")}
+                        {formatRange(property.surface_area.built, property.surface_area.built_to, "m²")}
                       </div>
                       <div className="text-xs text-gray-600">Built Area</div>
                     </div>
                   </div>
 
-                  {project.surface_area.terrace && (
+                  {property.surface_area.terrace && (
                     <div className="flex items-center space-x-2">
                       <Maximize2 className="h-4 w-4 text-gray-500 flex-shrink-0" />
                       <div>
                         <div className="font-medium text-gray-900 text-sm">
-                          {formatRange(project.surface_area.terrace, project.surface_area.terrace_to, "m²")}
+                          {formatRange(property.surface_area.terrace, property.surface_area.terrace_to, "m²")}
                         </div>
                         <div className="text-xs text-gray-600">Terrace</div>
                       </div>
                     </div>
                   )}
 
-                  {project.completion_date && (
+                  {property.year_built && (
                     <div className="flex items-center space-x-2">
                       <Calendar className="h-4 w-4 text-gray-500 flex-shrink-0" />
                       <div>
-                        <div className="font-medium text-gray-900 text-sm">{formatDate(project.completion_date)}</div>
-                        <div className="text-xs text-gray-600">Completion</div>
+                        <div className="font-medium text-gray-900 text-sm">{property.year_built}</div>
+                        <div className="text-xs text-gray-600">Year Built</div>
                       </div>
                     </div>
                   )}
@@ -401,30 +397,30 @@ export default function NewBuildingPage({ params }: NewBuildingPageProps) {
                   <div className="flex items-center space-x-2">
                     <Home className="h-4 w-4 text-[#C9A77C] flex-shrink-0" />
                     <div>
-                      <div className="font-medium text-gray-900 text-sm">{project.type.uk}</div>
-                      <div className="text-xs text-gray-600">{project.subtype.uk}</div>
+                      <div className="font-medium text-gray-900 text-sm">{property.type.uk}</div>
+                      <div className="text-xs text-gray-600">{property.subtype.uk}</div>
                     </div>
                   </div>
                 </div>
 
                 {/* Amenities */}
-                {(project.has_pool || project.has_garden || project.has_garage) && (
+                {(property.has_pool || property.has_garden || property.has_garage) && (
                   <div className="mt-4 pt-4 border-t border-gray-200">
                     <h4 className="text-base font-medium text-gray-900 mb-2">Amenities</h4>
                     <div className="flex flex-wrap gap-2">
-                      {project.has_pool && (
+                      {property.has_pool && (
                         <div className="flex items-center space-x-1 px-2 py-1 bg-blue-50 text-blue-700 rounded-lg">
                           <Waves className="h-3 w-3 flex-shrink-0" />
                           <span className="text-xs">Pool</span>
                         </div>
                       )}
-                      {project.has_garden && (
+                      {property.has_garden && (
                         <div className="flex items-center space-x-1 px-2 py-1 bg-green-50 text-green-700 rounded-lg">
                           <TreePine className="h-3 w-3 flex-shrink-0" />
                           <span className="text-xs">Garden</span>
                         </div>
                       )}
-                      {project.has_garage && (
+                      {property.has_garage && (
                         <div className="flex items-center space-x-1 px-2 py-1 bg-gray-50 text-gray-700 rounded-lg">
                           <Car className="h-3 w-3 flex-shrink-0" />
                           <span className="text-xs">Garage</span>
@@ -436,32 +432,25 @@ export default function NewBuildingPage({ params }: NewBuildingPageProps) {
               </div>
 
               {/* Description */}
-              {project.description_uk && (
+              {property.description_uk && (
                 <div className="space-y-3">
-                  <h3 className="text-lg font-medium text-gray-900">About This Project</h3>
+                  <h3 className="text-lg font-medium text-gray-900">About This Property</h3>
                   <div className="prose prose-gray max-w-none">
-                    <p className="text-gray-700 leading-relaxed text-sm">{project.description_uk}</p>
+                    <p className="text-gray-700 leading-relaxed text-sm">{property.description_uk}</p>
                   </div>
                 </div>
               )}
-
-              {/* Map */}
-              <ProjectMap
-                latitude={project.latitude}
-                longitude={project.longitude}
-                projectName={project.development_name}
-              />
             </div>
 
             {/* Right Column - Contact Form */}
             <div className="lg:col-span-1">
-              <ContactForm projectName={project.development_name} />
+              <ContactForm projectName={property.property_name} />
             </div>
           </div>
         </div>
 
-        {/* Similar Projects */}
-        <SimilarProjects currentProject={project} />
+        {/* Similar Properties */}
+        <SimilarProjects currentProject={property} />
       </main>
 
       {/* Investor Contact Section */}
@@ -595,10 +584,10 @@ export default function NewBuildingPage({ params }: NewBuildingPageProps) {
                 </li>
                 <li>
                   <Link
-                    href="/listings?category=new-developments"
+                    href="/secondary"
                     className="text-xs text-gray-600 hover:text-gray-900 font-light transition-colors"
                   >
-                    New Developments
+                    Secondary Market
                   </Link>
                 </li>
                 <li>
@@ -692,14 +681,14 @@ export default function NewBuildingPage({ params }: NewBuildingPageProps) {
       <ShareModal
         isOpen={shareModalOpen}
         onClose={() => setShareModalOpen(false)}
-        projectName={project.development_name}
+        projectName={property.property_name}
         projectUrl={currentUrl}
       />
 
       <CollectionModal
         isOpen={collectionModalOpen}
         onClose={() => setCollectionModalOpen(false)}
-        projectName={project.development_name}
+        projectName={property.property_name}
         isAuthenticated={isAuthenticated}
       />
     </div>

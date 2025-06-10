@@ -43,11 +43,11 @@ export function ContactForm({ projectName }: ContactFormProps) {
   }
 
   return (
-    <Card className="">
-      <CardHeader>
+    <Card className="bg-white">
+      <CardHeader className="bg-white">
         <CardTitle className="text-xl font-light text-gray-900">Request Information</CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="bg-white">
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <Input
@@ -57,7 +57,7 @@ export function ContactForm({ projectName }: ContactFormProps) {
               value={formData.name}
               onChange={handleChange}
               required
-              className="border-gray-200 focus:border-gray-300 focus:ring-0"
+              className="bg-white border-gray-200 focus:border-gray-300 focus:ring-0 text-gray-900"
             />
           </div>
 
@@ -69,7 +69,7 @@ export function ContactForm({ projectName }: ContactFormProps) {
               value={formData.email}
               onChange={handleChange}
               required
-              className="border-gray-200 focus:border-gray-300 focus:ring-0"
+              className="bg-white border-gray-200 focus:border-gray-300 focus:ring-0 text-gray-900"
             />
           </div>
 
@@ -80,7 +80,7 @@ export function ContactForm({ projectName }: ContactFormProps) {
               placeholder="Phone Number (optional)"
               value={formData.phone}
               onChange={handleChange}
-              className="border-gray-200 focus:border-gray-300 focus:ring-0"
+              className="bg-white border-gray-200 focus:border-gray-300 focus:ring-0 text-gray-900"
             />
           </div>
 
@@ -91,7 +91,7 @@ export function ContactForm({ projectName }: ContactFormProps) {
               value={formData.message}
               onChange={handleChange}
               rows={4}
-              className="border-gray-200 focus:border-gray-300 focus:ring-0 resize-none"
+              className="bg-white border-gray-200 focus:border-gray-300 focus:ring-0 resize-none text-gray-900"
             />
           </div>
 
