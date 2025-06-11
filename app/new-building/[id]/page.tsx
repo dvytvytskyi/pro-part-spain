@@ -120,12 +120,12 @@ export default function NewBuildingPage({ params }: NewBuildingPageProps) {
         id: params.id,
         development_name: "Luxury Marina Residences",
         images: [
-          "/images/property-1.webp",
-          "/images/property-2.webp",
-          "/images/property-3.webp",
-          "/images/property-4.webp",
-          "/images/property-5.webp",
-          "/images/property-6.webp",
+          "/placeholder.svg?height=600&width=800&text=Main+View",
+          "/placeholder.svg?height=400&width=600&text=Living+Room",
+          "/placeholder.svg?height=400&width=600&text=Kitchen",
+          "/placeholder.svg?height=400&width=600&text=Bedroom",
+          "/placeholder.svg?height=400&width=600&text=Bathroom",
+          "/placeholder.svg?height=400&width=600&text=Terrace",
         ],
         description_uk:
           "Discover the epitome of luxury living at Marina Residences, an exclusive new development situated in the heart of Marbella's prestigious Golden Mile. This exceptional project offers a collection of contemporary apartments and penthouses, each meticulously designed to provide the ultimate in comfort and sophistication. With panoramic sea views, state-of-the-art amenities, and proximity to world-class dining and shopping, Marina Residences represents the pinnacle of Costa del Sol living. The development features beautifully landscaped gardens, a stunning infinity pool, private beach access, and 24-hour concierge service. Each residence boasts premium finishes, smart home technology, and spacious terraces perfect for entertaining or simply enjoying the Mediterranean lifestyle.",
