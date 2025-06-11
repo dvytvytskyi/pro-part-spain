@@ -18,9 +18,16 @@ import {
   Shield,
   Handshake,
   FileText,
+  Bed,
+  Bath,
+  Square,
+  Home,
+  Phone,
+  Mail,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { HomeHeader } from "@/components/home-header"
+import { InvestorContactForm } from "@/components/investor-contact-form"
 
 const categories = [
   {
@@ -314,6 +321,65 @@ function SearchComponent() {
   )
 }
 
+function NewsletterSignup() {
+  const [email, setEmail] = useState("")
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isSubmitted, setIsSubmitted] = useState(false)
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!email.trim()) return
+
+    setIsSubmitting(true)
+
+    // Simulate API call
+    await new Promise((resolve) => setTimeout(resolve, 1000))
+
+    setIsSubmitting(false)
+    setIsSubmitted(true)
+    setEmail("")
+
+    // Reset success message after 3 seconds
+    setTimeout(() => setIsSubmitted(false), 3000)
+  }
+
+  return (
+    <div>
+      <h3 className="text-sm font-medium text-gray-900 mb-3">Stay Updated</h3>
+      <p className="text-xs text-gray-600 font-light mb-4 leading-relaxed">
+        Get the latest market insights and exclusive property listings delivered to your inbox.
+      </p>
+
+      {isSubmitted ? (
+        <div className="bg-gray-50 rounded-xl p-3 text-center">
+          <div className="text-xs text-gray-600 font-light">Thank you for subscribing!</div>
+        </div>
+      ) : (
+        <form onSubmit={handleSubmit} className="space-y-3">
+          <div className="relative">
+            <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-3 w-3" />
+            <input
+              type="email"
+              placeholder="Enter your email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full pl-9 pr-3 py-2 text-xs bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder:text-gray-500 focus:ring-1 focus:ring-gray-300 focus:border-gray-300 transition-all duration-200 outline-none"
+              required
+            />
+          </div>
+          <Button
+            type="submit"
+            disabled={isSubmitting || !email.trim()}
+            className="w-full bg-black hover:bg-gray-800 text-white px-4 py-2 text-xs font-light rounded-xl transition-all duration-200 disabled:opacity-50"
+          >
+            {isSubmitting ? "Subscribing..." : "Subscribe"}
+          </Button>
+        </form>
+      )}
+    </div>
+  )
+}
+
 export default function HomePage() {
   return (
     <div className="min-h-screen bg-white">
@@ -592,104 +658,486 @@ export default function HomePage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {/* Legal advice */}
-            <div className="bg-gray-50 rounded-2xl p-6 hover:bg-gray-100 transition-colors duration-300">
-              <div className="w-10 h-10 bg-gray-900 rounded-xl flex items-center justify-center mb-4">
-                <Scale className="h-4 w-4 text-white" />
+          <div className="grid grid-cols-12 gap-4">
+            {/* Legal advice - Large card */}
+            <div className="col-span-12 md:col-span-6 group">
+              <div className="bg-gray-50 rounded-3xl p-8 hover:bg-gray-100 transition-all duration-500 hover:scale-[1.02] hover:shadow-[0_20px_40px_rgba(0,0,0,0.08)] h-full relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-gray-200/30 to-transparent rounded-full -translate-y-16 translate-x-16"></div>
+                <div className="relative z-10 h-full flex flex-col justify-between">
+                  <div>
+                    <div className="w-12 h-12 bg-gray-900 rounded-xl flex items-center justify-center mb-5">
+                      <Scale className="h-5 w-5 text-white" />
+                    </div>
+                    <h3 className="text-xl font-semibold text-gray-900 mb-3">
+                      Legal advice on real estate transactions
+                    </h3>
+                    <p className="text-sm text-gray-600 font-light leading-relaxed max-w-lg">
+                      We provide expert legal advice in real estate transactions, including legal analysis, transaction
+                      structuring, and comprehensive support throughout the entire process to ensure your interests are
+                      protected.
+                    </p>
+                  </div>
+                  <div className="flex items-center text-xs font-medium text-gray-900 mt-6 group-hover:translate-x-2 transition-transform duration-300">
+                    Learn More
+                    <ChevronRight className="h-3 w-3 ml-2" />
+                  </div>
+                </div>
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-3">Legal advice on real estate transactions</h3>
-              <p className="text-sm text-gray-600 font-light leading-relaxed">
-                We provide expert legal advice in real estate transactions, including legal analysis and transaction
-                structuring.
-              </p>
             </div>
 
             {/* Tax Counseling */}
-            <div className="bg-gray-50 rounded-2xl p-6 hover:bg-gray-100 transition-colors duration-300">
-              <div className="w-10 h-10 bg-gray-900 rounded-xl flex items-center justify-center mb-4">
-                <Calculator className="h-4 w-4 text-white" />
+            <div className="col-span-12 md:col-span-6 lg:col-span-3 group">
+              <div className="bg-black text-white rounded-3xl p-6 hover:bg-gray-900 transition-all duration-500 hover:scale-[1.02] hover:shadow-[0_20px_40px_rgba(0,0,0,0.15)] h-full relative overflow-hidden">
+                <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-white/10 to-transparent rounded-full translate-y-12 -translate-x-12"></div>
+                <div className="relative z-10 h-full flex flex-col justify-between">
+                  <div>
+                    <div className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center mb-4">
+                      <Calculator className="h-4 w-4 text-white" />
+                    </div>
+                    <h3 className="text-lg font-semibold text-white mb-3">Tax Counseling</h3>
+                    <p className="text-sm text-white/80 font-light leading-relaxed">
+                      We provide tax advice in the context of acquiring and owning real estate, helping to optimize
+                      clients' tax liability.
+                    </p>
+                  </div>
+                  <div className="flex items-center text-xs font-medium text-white mt-6 group-hover:translate-x-2 transition-transform duration-300">
+                    Learn More
+                    <ChevronRight className="h-3 w-3 ml-2" />
+                  </div>
+                </div>
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-3">Tax Counseling</h3>
-              <p className="text-sm text-gray-600 font-light leading-relaxed">
-                We provide tax advice in the context of acquiring and owning real estate, helping to optimize clients'
-                tax liability.
-              </p>
             </div>
 
             {/* Financing and Guarantees */}
-            <div className="bg-gray-50 rounded-2xl p-6 hover:bg-gray-100 transition-colors duration-300">
-              <div className="w-10 h-10 bg-gray-900 rounded-xl flex items-center justify-center mb-4">
-                <CreditCard className="h-4 w-4 text-white" />
+            <div className="col-span-12 md:col-span-6 lg:col-span-3 group">
+              <div className="bg-gray-50 rounded-3xl p-6 hover:bg-gray-100 transition-all duration-500 hover:scale-[1.02] hover:shadow-[0_20px_40px_rgba(0,0,0,0.08)] h-full border border-gray-100">
+                <div className="h-full flex flex-col justify-between">
+                  <div>
+                    <div className="w-10 h-10 bg-gray-900 rounded-xl flex items-center justify-center mb-4">
+                      <CreditCard className="h-4 w-4 text-white" />
+                    </div>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-3">Financing and Guarantees</h3>
+                    <p className="text-sm text-gray-600 font-light leading-relaxed">
+                      We provide support in financing for real estate acquisitions and establishing appropriate
+                      guarantees.
+                    </p>
+                  </div>
+                  <div className="flex items-center text-xs font-medium text-gray-900 mt-6 group-hover:translate-x-2 transition-transform duration-300">
+                    Learn More
+                    <ChevronRight className="h-3 w-3 ml-2" />
+                  </div>
+                </div>
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-3">Financing and Guarantees</h3>
-              <p className="text-sm text-gray-600 font-light leading-relaxed">
-                We provide support in financing for real estate acquisitions and establishing appropriate guarantees.
-              </p>
             </div>
 
             {/* Risk Assessment */}
-            <div className="bg-gray-50 rounded-2xl p-6 hover:bg-gray-100 transition-colors duration-300">
-              <div className="w-10 h-10 bg-gray-900 rounded-xl flex items-center justify-center mb-4">
-                <Shield className="h-4 w-4 text-white" />
+            <div className="col-span-12 md:col-span-4 group">
+              <div className="bg-gray-50 rounded-3xl p-6 hover:bg-gray-100 transition-all duration-500 hover:scale-[1.02] hover:shadow-[0_20px_40px_rgba(0,0,0,0.08)] h-full border border-gray-100">
+                <div className="h-full flex flex-col justify-between">
+                  <div>
+                    <div className="w-10 h-10 bg-gray-900 rounded-xl flex items-center justify-center mb-4">
+                      <Shield className="h-4 w-4 text-white" />
+                    </div>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-3">Risk Assessment</h3>
+                    <p className="text-sm text-gray-600 font-light leading-relaxed">
+                      We analyze the risks of real estate transactions and provide recommendations to mitigate them.
+                    </p>
+                  </div>
+                  <div className="flex items-center text-xs font-medium text-gray-900 mt-6 group-hover:translate-x-2 transition-transform duration-300">
+                    Learn More
+                    <ChevronRight className="h-3 w-3 ml-2" />
+                  </div>
+                </div>
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-3">Risk Assessment</h3>
-              <p className="text-sm text-gray-600 font-light leading-relaxed">
-                We analyze the risks of real estate transactions and provide recommendations to mitigate them.
-              </p>
             </div>
 
             {/* Commercial Negotiations */}
-            <div className="bg-gray-50 rounded-2xl p-6 hover:bg-gray-100 transition-colors duration-300">
-              <div className="w-10 h-10 bg-gray-900 rounded-xl flex items-center justify-center mb-4">
-                <Handshake className="h-4 w-4 text-white" />
+            <div className="col-span-12 md:col-span-4 group">
+              <div className="bg-black text-white rounded-3xl p-6 hover:bg-gray-900 transition-all duration-500 hover:scale-[1.02] hover:shadow-[0_20px_40px_rgba(0,0,0,0.15)] h-full relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-white/10 to-transparent rounded-full -translate-y-10 translate-x-10"></div>
+                <div className="relative z-10 h-full flex flex-col justify-between">
+                  <div>
+                    <div className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center mb-4">
+                      <Handshake className="h-4 w-4 text-white" />
+                    </div>
+                    <h3 className="text-lg font-semibold text-white mb-3">Commercial Negotiations</h3>
+                    <p className="text-sm text-white/80 font-light leading-relaxed">
+                      We participate in commercial negotiations with counterparties and other parties to transactions.
+                    </p>
+                  </div>
+                  <div className="flex items-center text-xs font-medium text-white mt-6 group-hover:translate-x-2 transition-transform duration-300">
+                    Learn More
+                    <ChevronRight className="h-3 w-3 ml-2" />
+                  </div>
+                </div>
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-3">Commercial Negotiations</h3>
-              <p className="text-sm text-gray-600 font-light leading-relaxed">
-                We participate in commercial negotiations with counterparties and other parties to transactions.
-              </p>
             </div>
 
             {/* Transaction support */}
-            <div className="bg-gray-50 rounded-2xl p-6 hover:bg-gray-100 transition-colors duration-300">
-              <div className="w-10 h-10 bg-gray-900 rounded-xl flex items-center justify-center mb-4">
-                <FileText className="h-4 w-4 text-white" />
+            <div className="col-span-12 md:col-span-4 group">
+              <div className="bg-gray-50 rounded-3xl p-6 hover:bg-gray-100 transition-all duration-500 hover:scale-[1.02] hover:shadow-[0_20px_40px_rgba(0,0,0,0.08)] h-full border border-gray-100">
+                <div className="h-full flex flex-col justify-between">
+                  <div>
+                    <div className="w-10 h-10 bg-gray-900 rounded-xl flex items-center justify-center mb-4">
+                      <FileText className="h-4 w-4 text-white" />
+                    </div>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-3">Transaction Support</h3>
+                    <p className="text-sm text-gray-600 font-light leading-relaxed">
+                      We provide full legal support of the transaction process, including preparation of documents,
+                      conclusion of contracts and registration of transactions.
+                    </p>
+                  </div>
+                  <div className="flex items-center text-xs font-medium text-gray-900 mt-6 group-hover:translate-x-2 transition-transform duration-300">
+                    Learn More
+                    <ChevronRight className="h-3 w-3 ml-2" />
+                  </div>
+                </div>
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-3">Transaction support</h3>
-              <p className="text-sm text-gray-600 font-light leading-relaxed">
-                We provide full legal support of the transaction process, including preparation of documents, conclusion
-                of contracts and registration of transactions.
-              </p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="py-32 bg-gray-50">
-        <div className="max-w-4xl mx-auto text-center px-6">
-          <h2 className="text-4xl md:text-5xl font-light text-gray-900 mb-6 tracking-tight">
-            Ready to find your perfect home?
-          </h2>
-          <p className="text-xl text-gray-600 font-light mb-12 max-w-2xl mx-auto">
-            Browse our complete collection of luxury properties or speak with our expert team
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button
-              asChild
-              size="lg"
-              className="bg-white hover:bg-gray-50 text-gray-900 border border-gray-200 px-8 py-4 text-lg font-medium rounded-full shadow-sm hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] transition-all duration-300"
-            >
-              <Link href="/listings">Browse All Properties</Link>
-            </Button>
-            <Button
-              asChild
-              variant="outline"
-              size="lg"
-              className="border-gray-300 text-gray-700 hover:bg-gray-100 px-8 py-4 text-lg font-medium rounded-full hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] transition-all duration-300"
-            >
-              <Link href="/contact">Contact Our Team</Link>
-            </Button>
+      {/* Villa Shiro Banner */}
+      <section className="relative py-32 px-6 overflow-hidden">
+        <div className="absolute inset-0 z-0">
+          <Image
+            src="/images/villa-shiro-banner.jpg"
+            alt="Villa Shiro - Luxury Modern Villa"
+            fill
+            className="object-cover"
+          />
+          <div
+            className="absolute inset-0"
+            style={{
+              background:
+                "linear-gradient(135deg, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.6) 40%, rgba(0,0,0,0.3) 70%, rgba(0,0,0,0.2) 100%)",
+            }}
+          />
+        </div>
+
+        <div className="relative z-10 max-w-7xl mx-auto">
+          <div className="max-w-2xl">
+            <div className="mb-6">
+              <span className="inline-block bg-white/10 text-white text-sm font-light px-4 py-2 rounded-full border border-white/20">
+                Featured Property
+              </span>
+            </div>
+
+            <h2 className="text-3xl md:text-4xl font-light text-white mb-6 tracking-tight">Villa Shiro</h2>
+
+            <p className="text-base text-white/80 font-light mb-8 leading-relaxed">
+              Exceptional modern villa featuring contemporary architecture, premium finishes, and breathtaking mountain
+              views in an exclusive location.
+            </p>
+
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
+              <div className="text-center">
+                <div className="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center mb-3 mx-auto">
+                  <Home className="h-5 w-5 text-white" />
+                </div>
+                <div className="text-white text-base font-light">665 m²</div>
+                <div className="text-white/70 text-xs font-light">Interior</div>
+              </div>
+
+              <div className="text-center">
+                <div className="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center mb-3 mx-auto">
+                  <Square className="h-5 w-5 text-white" />
+                </div>
+                <div className="text-white text-base font-light">1,322 m²</div>
+                <div className="text-white/70 text-xs font-light">Total Space</div>
+              </div>
+
+              <div className="text-center">
+                <div className="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center mb-3 mx-auto">
+                  <Bed className="h-5 w-5 text-white" />
+                </div>
+                <div className="text-white text-base font-light">5</div>
+                <div className="text-white/70 text-xs font-light">Bedrooms</div>
+              </div>
+
+              <div className="text-center">
+                <div className="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center mb-3 mx-auto">
+                  <Bath className="h-5 w-5 text-white" />
+                </div>
+                <div className="text-white text-base font-light">5+2</div>
+                <div className="text-white/70 text-xs font-light">Bathrooms</div>
+              </div>
+            </div>
+
+            <div className="flex flex-col sm:flex-row gap-4">
+              <Button
+                asChild
+                className="bg-white/15 hover:bg-white/25 text-white px-6 py-2 text-sm font-light rounded-full backdrop-blur-md border border-white/20 shadow-sm hover:shadow-[0_8px_24px_rgba(255,255,255,0.15)] transition-all duration-300"
+              >
+                <Link href="/property/villa-shiro">View Details</Link>
+              </Button>
+              <Button
+                asChild
+                variant="outline"
+                className="bg-black/15 border-white/20 text-white hover:bg-black/25 px-6 py-2 text-sm font-light rounded-full backdrop-blur-md hover:shadow-[0_8px_24px_rgba(0,0,0,0.15)] transition-all duration-300"
+              >
+                <Link href="/contact?property=villa-shiro">Contact Agent</Link>
+              </Button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Marbella Guides & Tools Section */}
+      <section className="py-24 px-6 bg-white">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-light text-gray-900 mb-4 tracking-tight">Marbella Resources</h2>
+            <p className="text-sm text-gray-600 font-light max-w-2xl mx-auto leading-relaxed">
+              Essential guides and tools for navigating Marbella's luxury real estate market
+            </p>
+          </div>
+
+          {/* Interactive Grid Layout */}
+          <div className="grid grid-cols-12 gap-4 h-[800px]">
+            {/* Golden Mile - Large Feature */}
+            <Link href="/guides/golden-mile" className="col-span-12 md:col-span-5 row-span-2 group">
+              <div className="h-full bg-gray-50 rounded-3xl p-8 hover:bg-gray-100 transition-all duration-500 hover:scale-[1.02] hover:shadow-[0_20px_40px_rgba(0,0,0,0.08)] relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-gray-200/30 to-transparent rounded-full -translate-y-16 translate-x-16"></div>
+                <div className="relative z-10 h-full flex flex-col justify-between">
+                  <div>
+                    <div className="text-xs font-light text-gray-500 mb-2 tracking-wider uppercase">Area Guide</div>
+                    <h3 className="text-2xl font-light text-gray-900 mb-4 leading-tight">Golden Mile</h3>
+                    <p className="text-sm text-gray-600 font-light leading-relaxed max-w-sm">
+                      The most prestigious stretch of coastline, home to luxury hotels, exclusive beach clubs, and
+                      opulent villas.
+                    </p>
+                  </div>
+                  <div className="flex items-center text-xs font-medium text-gray-900 group-hover:translate-x-2 transition-transform duration-300">
+                    Explore Guide
+                    <ChevronRight className="h-3 w-3 ml-2" />
+                  </div>
+                </div>
+              </div>
+            </Link>
+
+            {/* Purchase Guide */}
+            <Link href="/guides/purchase" className="col-span-6 md:col-span-4 group">
+              <div className="h-full bg-black rounded-3xl p-6 hover:bg-gray-900 transition-all duration-500 hover:scale-[1.02] hover:shadow-[0_20px_40px_rgba(0,0,0,0.15)] relative overflow-hidden">
+                <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-white/10 to-transparent rounded-full translate-y-12 -translate-x-12"></div>
+                <div className="relative z-10 h-full flex flex-col justify-between">
+                  <div>
+                    <div className="text-xs font-light text-white/60 mb-2 tracking-wider uppercase">Guide</div>
+                    <h3 className="text-lg font-light text-white mb-3">Purchase Guide</h3>
+                    <p className="text-xs text-white/80 font-light leading-relaxed">
+                      Complete process, documents, costs and taxes for buying property in Marbella.
+                    </p>
+                  </div>
+                  <div className="flex items-center text-xs font-medium text-white group-hover:translate-x-2 transition-transform duration-300">
+                    View Guide
+                    <ChevronRight className="h-3 w-3 ml-2" />
+                  </div>
+                </div>
+              </div>
+            </Link>
+
+            {/* Tax Calculator */}
+            <Link href="/tools/tax-calculator" className="col-span-6 md:col-span-3 group">
+              <div className="h-full bg-gray-50 rounded-3xl p-6 hover:bg-gray-100 transition-all duration-500 hover:scale-[1.02] hover:shadow-[0_20px_40px_rgba(0,0,0,0.08)] border border-gray-100">
+                <div className="h-full flex flex-col justify-between">
+                  <div>
+                    <div className="text-xs font-light text-gray-500 mb-2 tracking-wider uppercase">Calculator</div>
+                    <h3 className="text-lg font-light text-gray-900 mb-3">Tax Calculator</h3>
+                    <p className="text-xs text-gray-600 font-light leading-relaxed">
+                      Calculate taxes and costs when buying property.
+                    </p>
+                  </div>
+                  <div className="flex items-center text-xs font-medium text-gray-900 group-hover:translate-x-2 transition-transform duration-300">
+                    Calculate
+                    <ChevronRight className="h-3 w-3 ml-2" />
+                  </div>
+                </div>
+              </div>
+            </Link>
+
+            {/* La Zagaleta */}
+            <Link href="/guides/la-zagaleta" className="col-span-6 md:col-span-3 group">
+              <div className="h-full bg-gray-50 rounded-3xl p-6 hover:bg-gray-100 transition-all duration-500 hover:scale-[1.02] hover:shadow-[0_20px_40px_rgba(0,0,0,0.08)] border border-gray-100">
+                <div className="h-full flex flex-col justify-between">
+                  <div>
+                    <div className="text-xs font-light text-gray-500 mb-2 tracking-wider uppercase">Area Guide</div>
+                    <h3 className="text-lg font-light text-gray-900 mb-3">La Zagaleta</h3>
+                    <p className="text-xs text-gray-600 font-light leading-relaxed">
+                      Europe's most exclusive gated community with championship golf courses.
+                    </p>
+                  </div>
+                  <div className="flex items-center text-xs font-medium text-gray-900 group-hover:translate-x-2 transition-transform duration-300">
+                    Explore
+                    <ChevronRight className="h-3 w-3 ml-2" />
+                  </div>
+                </div>
+              </div>
+            </Link>
+
+            {/* Selling Guide */}
+            <Link href="/guides/selling" className="col-span-6 md:col-span-4 group">
+              <div className="h-full bg-gray-50 rounded-3xl p-6 hover:bg-gray-100 transition-all duration-500 hover:scale-[1.02] hover:shadow-[0_20px_40px_rgba(0,0,0,0.08)] border border-gray-100">
+                <div className="h-full flex flex-col justify-between">
+                  <div>
+                    <div className="text-xs font-light text-gray-500 mb-2 tracking-wider uppercase">Guide</div>
+                    <h3 className="text-lg font-light text-gray-900 mb-3">Selling Guide</h3>
+                    <p className="text-xs text-gray-600 font-light leading-relaxed">
+                      Process, taxes, costs and what to avoid when selling your property.
+                    </p>
+                  </div>
+                  <div className="flex items-center text-xs font-medium text-gray-900 group-hover:translate-x-2 transition-transform duration-300">
+                    View Guide
+                    <ChevronRight className="h-3 w-3 ml-2" />
+                  </div>
+                </div>
+              </div>
+            </Link>
+
+            {/* Sierra Blanca & Nueva Andalucía - Combined */}
+            <Link href="/guides/sierra-blanca" className="col-span-6 md:col-span-3 group">
+              <div className="h-full bg-black rounded-3xl p-6 hover:bg-gray-900 transition-all duration-500 hover:scale-[1.02] hover:shadow-[0_20px_40px_rgba(0,0,0,0.15)] relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-white/10 to-transparent rounded-full -translate-y-10 translate-x-10"></div>
+                <div className="relative z-10 h-full flex flex-col justify-between">
+                  <div>
+                    <div className="text-xs font-light text-white/60 mb-2 tracking-wider uppercase">Area Guide</div>
+                    <h3 className="text-lg font-light text-white mb-3">Sierra Blanca</h3>
+                    <p className="text-xs text-white/80 font-light leading-relaxed">
+                      Elevated luxury living with panoramic sea views.
+                    </p>
+                  </div>
+                  <div className="flex items-center text-xs font-medium text-white group-hover:translate-x-2 transition-transform duration-300">
+                    Explore
+                    <ChevronRight className="h-3 w-3 ml-2" />
+                  </div>
+                </div>
+              </div>
+            </Link>
+
+            {/* Mortgage Calculator */}
+            <Link href="/tools/mortgage-calculator" className="col-span-6 md:col-span-2 group">
+              <div className="h-full bg-gray-50 rounded-3xl p-6 hover:bg-gray-100 transition-all duration-500 hover:scale-[1.02] hover:shadow-[0_20px_40px_rgba(0,0,0,0.08)] border border-gray-100">
+                <div className="h-full flex flex-col justify-between">
+                  <div>
+                    <div className="text-xs font-light text-gray-500 mb-2 tracking-wider uppercase">Calculator</div>
+                    <h3 className="text-sm font-light text-gray-900 mb-3">Mortgage Calculator</h3>
+                    <p className="text-xs text-gray-600 font-light leading-relaxed">
+                      Estimate monthly payments and costs.
+                    </p>
+                  </div>
+                  <div className="flex items-center text-xs font-medium text-gray-900 group-hover:translate-x-2 transition-transform duration-300">
+                    Calculate
+                    <ChevronRight className="h-3 w-3 ml-2" />
+                  </div>
+                </div>
+              </div>
+            </Link>
+
+            {/* Sales & Trends - Wide */}
+            <Link href="/guides/sales-trends" className="col-span-12 md:col-span-7 group">
+              <div className="h-full bg-gray-50 rounded-3xl p-8 hover:bg-gray-100 transition-all duration-500 hover:scale-[1.02] hover:shadow-[0_20px_40px_rgba(0,0,0,0.08)] border border-gray-100 relative overflow-hidden">
+                <div className="absolute bottom-0 right-0 w-40 h-40 bg-gradient-to-tl from-gray-200/30 to-transparent rounded-full translate-y-20 translate-x-20"></div>
+                <div className="relative z-10 h-full flex flex-col justify-between">
+                  <div>
+                    <div className="text-xs font-light text-gray-500 mb-2 tracking-wider uppercase">Market Data</div>
+                    <h3 className="text-xl font-light text-gray-900 mb-4">Sales & Trends</h3>
+                    <p className="text-sm text-gray-600 font-light leading-relaxed max-w-md">
+                      Recent sales data, asking prices, and market trends across Marbella's luxury real estate market.
+                    </p>
+                  </div>
+                  <div className="flex items-center text-xs font-medium text-gray-900 group-hover:translate-x-2 transition-transform duration-300">
+                    View Market Data
+                    <ChevronRight className="h-3 w-3 ml-2" />
+                  </div>
+                </div>
+              </div>
+            </Link>
+
+            {/* All Guides */}
+            <Link href="/guides" className="col-span-12 md:col-span-5 group">
+              <div className="h-full bg-black rounded-3xl p-8 hover:bg-gray-900 transition-all duration-500 hover:scale-[1.02] hover:shadow-[0_20px_40px_rgba(0,0,0,0.15)] relative overflow-hidden">
+                <div className="absolute top-0 left-0 w-32 h-32 bg-gradient-to-br from-white/10 to-transparent rounded-full -translate-y-16 -translate-x-16"></div>
+                <div className="relative z-10 h-full flex flex-col justify-between">
+                  <div>
+                    <div className="text-xs font-light text-white/60 mb-2 tracking-wider uppercase">
+                      Complete Collection
+                    </div>
+                    <h3 className="text-xl font-light text-white mb-4">All Area Guides</h3>
+                    <p className="text-sm text-white/80 font-light leading-relaxed max-w-sm">
+                      Comprehensive guides covering every neighbourhood, from Marbella Center to Nueva Andalucía and
+                      beyond.
+                    </p>
+                  </div>
+                  <div className="flex items-center text-xs font-medium text-white group-hover:translate-x-2 transition-transform duration-300">
+                    Browse All Guides
+                    <ChevronRight className="h-3 w-3 ml-2" />
+                  </div>
+                </div>
+              </div>
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Investor Contact Section */}
+      <section className="py-24 px-6 bg-gray-50">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            {/* Left side - Image with floating stats */}
+            <div className="relative">
+              <div className="relative rounded-3xl overflow-hidden">
+                <Image
+                  src="/images/contact-agent.jpg"
+                  alt="Professional Real Estate Agent"
+                  width={600}
+                  height={700}
+                  className="object-cover w-full h-[500px] lg:h-[600px]"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+              </div>
+
+              {/* Floating Stats Cards */}
+              <div className="absolute -bottom-6 -left-6 bg-white rounded-2xl p-4 shadow-[0_8px_24px_rgba(0,0,0,0.12)]">
+                <div className="text-2xl font-light text-gray-900">€2.4B+</div>
+                <div className="text-xs text-gray-600 font-light">Properties Sold</div>
+              </div>
+
+              <div className="absolute -top-6 -right-6 bg-black rounded-2xl p-4 text-white">
+                <div className="text-2xl font-light">500+</div>
+                <div className="text-xs text-white/80 font-light">Happy Investors</div>
+              </div>
+
+              <div className="absolute top-1/2 -left-8 bg-white rounded-2xl p-4 shadow-[0_8px_24px_rgba(0,0,0,0.12)]">
+                <div className="text-xl font-light text-gray-900">15+</div>
+                <div className="text-xs text-gray-600 font-light">Years Experience</div>
+              </div>
+            </div>
+
+            {/* Right side - Contact Form */}
+            <div className="lg:pl-8">
+              <div className="mb-8">
+                <h2 className="text-3xl md:text-4xl font-light text-gray-900 mb-4 tracking-tight">
+                  Ready to Invest in Marbella?
+                </h2>
+                <p className="text-sm text-gray-600 font-light leading-relaxed max-w-md">
+                  Connect with our expert team to explore exclusive investment opportunities in Costa del Sol's luxury
+                  real estate market.
+                </p>
+              </div>
+
+              <InvestorContactForm />
+
+              <div className="mt-6 flex items-center gap-4 text-xs text-gray-500">
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                  <span>24h Response Time</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                  <span>Confidential Consultation</span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -697,74 +1145,160 @@ export default function HomePage() {
       {/* Footer */}
       <footer className="bg-white border-t border-gray-100 py-16">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            <div className="col-span-1 md:col-span-2">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 mb-12">
+            {/* Company Info */}
+            <div className="lg:col-span-2">
               <div className="relative h-8 w-24 mb-6">
                 <Image src="/images/logo.png" alt="PRO PART" fill className="object-contain" />
               </div>
-              <p className="text-gray-600 font-light text-lg max-w-md">
-                Your trusted partner in finding exceptional properties on the Costa del Sol and beyond.
+              <p className="text-sm text-gray-600 font-light leading-relaxed mb-6 max-w-md">
+                Your trusted partner in finding exceptional properties on the Costa del Sol and beyond. Specializing in
+                luxury real estate investments and sales.
               </p>
+
+              {/* Contact Info */}
+              <div className="space-y-3">
+                <div className="flex items-start gap-3">
+                  <MapPin className="h-4 w-4 text-gray-400 mt-0.5 flex-shrink-0" />
+                  <div className="text-xs text-gray-600 font-light leading-relaxed">
+                    Pl. de la Iglesia, 3, office 1-D
+                    <br />
+                    29670, San Pedro de Alcántara
+                    <br />
+                    Malaga, Spain
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <Phone className="h-4 w-4 text-gray-400 flex-shrink-0" />
+                  <a
+                    href="tel:+34695113333"
+                    className="text-xs text-gray-600 font-light hover:text-gray-900 transition-colors"
+                  >
+                    +34 695 113 333
+                  </a>
+                </div>
+              </div>
             </div>
+
+            {/* Properties */}
             <div>
-              <h3 className="text-gray-900 font-semibold mb-4">Categories</h3>
-              <ul className="space-y-2">
+              <h3 className="text-sm font-medium text-gray-900 mb-4">Properties</h3>
+              <ul className="space-y-3">
                 <li>
                   <Link
                     href="/listings?category=luxury-villas"
-                    className="text-gray-600 hover:text-gray-900 font-light"
+                    className="text-xs text-gray-600 hover:text-gray-900 font-light transition-colors"
                   >
                     Luxury Villas
                   </Link>
                 </li>
                 <li>
-                  <Link href="/listings?category=penthouses" className="text-gray-600 hover:text-gray-900 font-light">
+                  <Link
+                    href="/listings?category=penthouses"
+                    className="text-xs text-gray-600 hover:text-gray-900 font-light transition-colors"
+                  >
                     Penthouses
                   </Link>
                 </li>
                 <li>
-                  <Link href="/listings?category=sea-view" className="text-gray-600 hover:text-gray-900 font-light">
-                    Sea View
+                  <Link
+                    href="/listings?category=apartments"
+                    className="text-xs text-gray-600 hover:text-gray-900 font-light transition-colors"
+                  >
+                    Apartments
                   </Link>
                 </li>
                 <li>
                   <Link
                     href="/listings?category=new-developments"
-                    className="text-gray-600 hover:text-gray-900 font-light"
+                    className="text-xs text-gray-600 hover:text-gray-900 font-light transition-colors"
                   >
                     New Developments
                   </Link>
                 </li>
+                <li>
+                  <Link
+                    href="/listings?category=investment"
+                    className="text-xs text-gray-600 hover:text-gray-900 font-light transition-colors"
+                  >
+                    Investment Properties
+                  </Link>
+                </li>
               </ul>
             </div>
+
+            {/* Areas */}
             <div>
-              <h3 className="text-gray-900 font-semibold mb-4">Company</h3>
-              <ul className="space-y-2">
+              <h3 className="text-sm font-medium text-gray-900 mb-4">Areas</h3>
+              <ul className="space-y-3">
                 <li>
-                  <Link href="/about" className="text-gray-600 hover:text-gray-900 font-light">
-                    About
+                  <Link
+                    href="/listings?area=marbella"
+                    className="text-xs text-gray-600 hover:text-gray-900 font-light transition-colors"
+                  >
+                    Marbella
                   </Link>
                 </li>
                 <li>
-                  <Link href="/blog" className="text-gray-600 hover:text-gray-900 font-light">
-                    Blog
+                  <Link
+                    href="/listings?area=golden-mile"
+                    className="text-xs text-gray-600 hover:text-gray-900 font-light transition-colors"
+                  >
+                    Golden Mile
                   </Link>
                 </li>
                 <li>
-                  <Link href="/contact" className="text-gray-600 hover:text-gray-900 font-light">
-                    Contact
+                  <Link
+                    href="/listings?area=puerto-banus"
+                    className="text-xs text-gray-600 hover:text-gray-900 font-light transition-colors"
+                  >
+                    Puerto Banús
                   </Link>
                 </li>
                 <li>
-                  <Link href="/join-us" className="text-gray-600 hover:text-gray-900 font-light">
-                    Join Us
+                  <Link
+                    href="/listings?area=nueva-andalucia"
+                    className="text-xs text-gray-600 hover:text-gray-900 font-light transition-colors"
+                  >
+                    Nueva Andalucía
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/listings?area=estepona"
+                    className="text-xs text-gray-600 hover:text-gray-900 font-light transition-colors"
+                  >
+                    Estepona
                   </Link>
                 </li>
               </ul>
+            </div>
+
+            {/* Newsletter */}
+            <div>
+              <NewsletterSignup />
             </div>
           </div>
-          <div className="border-t border-gray-100 mt-12 pt-8 text-center">
-            <p className="text-gray-500 font-light">© 2024 PRO PART. All rights reserved.</p>
+
+          {/* Bottom Section */}
+          <div className="border-t border-gray-100 pt-8">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+              <div className="text-xs text-gray-500 font-light">© 2025 All rights reserved</div>
+              <div className="flex items-center gap-6">
+                <Link
+                  href="/privacy-policy"
+                  className="text-xs text-gray-500 hover:text-gray-700 font-light transition-colors"
+                >
+                  Privacy Policy
+                </Link>
+                <Link
+                  href="/terms-of-use"
+                  className="text-xs text-gray-500 hover:text-gray-700 font-light transition-colors"
+                >
+                  Terms of Use
+                </Link>
+              </div>
+            </div>
           </div>
         </div>
       </footer>

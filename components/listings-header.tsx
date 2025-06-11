@@ -18,6 +18,7 @@ import {
   Waves,
   TreePine,
   Car,
+  Check,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import type { FilterState } from "@/types/property"
@@ -35,30 +36,8 @@ const popularLocations = [
   "Alicante",
 ]
 
-const priceRanges = [
-  { label: "Any Price", value: null },
-  { label: "Up to $500K", min: null, max: 500000 },
-  { label: "$500K - $1M", min: 500000, max: 1000000 },
-  { label: "$1M - $2M", min: 1000000, max: 2000000 },
-  { label: "$2M+", min: 2000000, max: null },
-]
-
-const propertyTypes = ["Any Type", "Apartment", "Villa", "Townhouse", "Penthouse"]
-const bedroomOptions = ["Any", "1", "2", "3", "4", "5+"]
-
-const locations = [
-  "Alicante",
-  "Barcelona",
-  "Cadiz",
-  "Granada",
-  "Ibiza",
-  "Madrid",
-  "Marbella",
-  "Mallorca",
-  "Malaga",
-  "Seville",
-  "Valencia",
-]
+const propertyTypes = ["Apartment", "Villa", "Penthouse"]
+const bedroomOptions = ["Studio", "1", "2", "3", "4", "5", "6", "7", "8"]
 
 const MAX_LOCATIONS = 3
 
@@ -83,10 +62,16 @@ export function ListingsHeader({
   const [selectedLocations, setSelectedLocations] = useState<string[]>([])
   const [filteredLocations, setFilteredLocations] = useState<string[]>([])
   const [showMaxWarning, setShowMaxWarning] = useState(false)
-  const [activeFilter, setActiveFilter] = useState<string | null>(null)
-  const [activeCategory, setActiveCategory] = useState<string | null>(null)
-  const [priceFrom, setPriceFrom] = useState<string>("")
-  const [priceTo, setPriceTo] = useState<string>("")
+
+  // Filter states
+  const [isPriceOpen, setIsPriceOpen] = useState(false)
+  const [isTypeOpen, setIsTypeOpen] = useState(false)
+  const [isBedsOpen, setIsBedsOpen] = useState(false)
+  const [priceFrom, setPriceFrom] = useState("")
+  const [priceTo, setPriceTo] = useState("")
+  const [selectedTypes, setSelectedTypes] = useState<string[]>([])
+  const [selectedBeds, setSelectedBeds] = useState<string[]>([])
+  const [activeCategory, setActiveCategory] = useState<string>("new-building")
 
   const searchRef = useRef<HTMLDivElement>(null)
   const priceRef = useRef<HTMLDivElement>(null)
@@ -99,31 +84,19 @@ export function ListingsHeader({
       if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
         setIsLocationOpen(false)
       }
-
-      if (activeFilter === "price" && priceRef.current && !priceRef.current.contains(event.target as Node)) {
-        setActiveFilter(null)
+      if (priceRef.current && !priceRef.current.contains(event.target as Node)) {
+        setIsPriceOpen(false)
       }
-
-      if (activeFilter === "type" && typeRef.current && !typeRef.current.contains(event.target as Node)) {
-        setActiveFilter(null)
+      if (typeRef.current && !typeRef.current.contains(event.target as Node)) {
+        setIsTypeOpen(false)
       }
-
-      if (activeFilter === "beds" && bedsRef.current && !bedsRef.current.contains(event.target as Node)) {
-        setActiveFilter(null)
+      if (bedsRef.current && !bedsRef.current.contains(event.target as Node)) {
+        setIsBedsOpen(false)
       }
     }
 
     document.addEventListener("mousedown", handleClickOutside)
     return () => document.removeEventListener("mousedown", handleClickOutside)
-  }, [activeFilter])
-
-  // Check for active category from URL
-  useEffect(() => {
-    const url = new URL(window.location.href)
-    const categoryParam = url.searchParams.get("category")
-    if (categoryParam) {
-      setActiveCategory(categoryParam)
-    }
   }, [])
 
   // Filter locations based on search query
@@ -149,21 +122,6 @@ export function ListingsHeader({
       return () => clearTimeout(timer)
     }
   }, [showMaxWarning])
-
-  // Initialize price fields from filters
-  useEffect(() => {
-    if (filters.min_price) {
-      setPriceFrom(new Intl.NumberFormat("en-US").format(filters.min_price))
-    } else {
-      setPriceFrom("")
-    }
-
-    if (filters.max_price) {
-      setPriceTo(new Intl.NumberFormat("en-US").format(filters.max_price))
-    } else {
-      setPriceTo("")
-    }
-  }, [filters.min_price, filters.max_price])
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
@@ -210,51 +168,98 @@ export function ListingsHeader({
     })
   }
 
-  const handlePriceChange = (value: string) => {
-    if (!onFiltersChange) return
-
-    const range = priceRanges.find((r) => r.label === value)
-    if (range) {
-      onFiltersChange({
-        ...filters,
-        min_price: range.min,
-        max_price: range.max,
-      })
-    }
-    setActiveFilter(null)
-  }
-
   const toggleOption = (key: "pool" | "garden" | "garage") => {
     updateFilter(key, !filters[key])
   }
 
   const formatPriceInput = (value: string) => {
-    // Remove all non-digits
     const digits = value.replace(/\D/g, "")
-
-    // Add thousand separators
     if (digits) {
       return new Intl.NumberFormat("en-US").format(Number.parseInt(digits))
     }
     return ""
   }
 
-  const parsePriceInput = (value: string) => {
-    return Number.parseInt(value.replace(/,/g, "")) || 0
+  const togglePropertyType = (type: string) => {
+    const newTypes = selectedTypes.includes(type) ? selectedTypes.filter((t) => t !== type) : [...selectedTypes, type]
+    setSelectedTypes(newTypes)
+
+    if (onFiltersChange) {
+      onFiltersChange({
+        ...filters,
+        property_type: newTypes.length > 0 ? newTypes.join(",") : null,
+      })
+    }
   }
 
-  const getCurrentPriceLabel = () => {
-    if (filters.min_price || filters.max_price) {
-      const min = filters.min_price ? `$${new Intl.NumberFormat("en-US").format(filters.min_price)}` : "0"
-      const max = filters.max_price ? `$${new Intl.NumberFormat("en-US").format(filters.max_price)}` : "Any"
-      return `${min} - ${max}`
+  const toggleBedroom = (bed: string) => {
+    const newBeds = selectedBeds.includes(bed) ? selectedBeds.filter((b) => b !== bed) : [...selectedBeds, bed]
+    setSelectedBeds(newBeds)
+
+    if (onFiltersChange) {
+      onFiltersChange({
+        ...filters,
+        bedrooms: newBeds.length > 0 ? newBeds.join(",") : null,
+      })
+    }
+  }
+
+  const applyPriceFilter = () => {
+    const minPrice = priceFrom ? Number.parseInt(priceFrom.replace(/,/g, "")) : null
+    const maxPrice = priceTo ? Number.parseInt(priceTo.replace(/,/g, "")) : null
+
+    if (onFiltersChange) {
+      onFiltersChange({
+        ...filters,
+        min_price: minPrice,
+        max_price: maxPrice,
+      })
+    }
+    setIsPriceOpen(false)
+  }
+
+  const clearPriceFilter = () => {
+    setPriceFrom("")
+    setPriceTo("")
+    if (onFiltersChange) {
+      onFiltersChange({
+        ...filters,
+        min_price: null,
+        max_price: null,
+      })
+    }
+    setIsPriceOpen(false)
+  }
+
+  const getPriceLabel = () => {
+    if (priceFrom || priceTo) {
+      const from = priceFrom || "0"
+      const to = priceTo || "Any"
+      return `€${from} - €${to}`
     }
     return "Price"
   }
 
-  const hasActiveFilters = Object.values(filters).some(
-    (value) => value !== null && value !== undefined && value !== "" && !(Array.isArray(value) && value.length === 0),
-  )
+  const getTypeLabel = () => {
+    if (selectedTypes.length === 0) return "Type"
+    if (selectedTypes.length === 1) return selectedTypes[0]
+    return `${selectedTypes.length} Types`
+  }
+
+  const getBedsLabel = () => {
+    if (selectedBeds.length === 0) return "Beds"
+    if (selectedBeds.length === 1) return selectedBeds[0] === "Studio" ? "Studio" : `${selectedBeds[0]} Beds`
+    return `${selectedBeds.length} Selected`
+  }
+
+  const hasActiveFilters =
+    selectedTypes.length > 0 ||
+    selectedBeds.length > 0 ||
+    priceFrom ||
+    priceTo ||
+    filters.pool ||
+    filters.garden ||
+    filters.garage
 
   return (
     <header className="bg-white border-b border-gray-100 relative sticky top-0 z-50">
@@ -333,7 +338,7 @@ export function ListingsHeader({
 
               {/* Location Dropdown */}
               {isLocationOpen && selectedLocations.length < MAX_LOCATIONS && (
-                <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-200 rounded-xl shadow-lg z-[50] max-h-64 overflow-y-auto">
+                <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-200 rounded-xl shadow-lg z-[200] max-h-64 overflow-y-auto">
                   <div className="py-2">
                     <div className="px-4 py-2 text-xs font-light text-gray-500 border-b border-gray-100 sticky top-0 bg-white">
                       {searchQuery ? "Search Results" : "Popular Locations"}
@@ -396,107 +401,66 @@ export function ListingsHeader({
         </div>
       </div>
 
-      {/* Bottom Container - Filters (only show if showFilters is true) */}
+      {/* Bottom Container - Filters */}
       {showFilters && (
-        <div className="relative overflow-visible">
-          {/* Top border line */}
-          <div className="absolute top-0 left-0 right-0 h-[0.5px] bg-gray-200"></div>
-          {/* Bottom border line */}
-          <div className="absolute bottom-0 left-0 right-0 h-[0.5px] bg-gray-200"></div>
-
-          <div className="max-w-7xl mx-auto px-6 py-3">
-            <div className="flex items-center space-x-4 overflow-x-auto no-scrollbar">
-              {/* Filters Section */}
-              <div className="flex items-center gap-3 pr-4">
+        <div className="border-t border-gray-100">
+          <div className="max-w-7xl mx-auto px-6 py-4">
+            <div className="flex items-center justify-between">
+              {/* Left Side - Filters */}
+              <div className="flex items-center gap-4">
                 {/* Price Filter */}
                 <div className="relative" ref={priceRef}>
                   <button
-                    onClick={() => setActiveFilter(activeFilter === "price" ? null : "price")}
-                    className={`flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg border ${
-                      activeFilter === "price" ? "border-gray-400 bg-gray-50" : "border-gray-200 bg-white"
-                    } hover:border-gray-300 transition-all duration-200`}
+                    type="button"
+                    onClick={() => setIsPriceOpen(!isPriceOpen)}
+                    className={`flex items-center gap-2 px-3 py-1 rounded-lg border transition-all duration-200 ${
+                      isPriceOpen ? "border-gray-400 bg-gray-50" : "border-gray-200 bg-white hover:border-gray-300"
+                    }`}
                   >
-                    <DollarSign className="h-3.5 w-3.5 text-gray-500" />
-                    <span className="text-gray-900 font-light text-[14px]">{getCurrentPriceLabel()}</span>
-                    <ChevronDown className="h-3.5 w-3.5 text-gray-400" />
+                    <DollarSign className="h-4 w-4 text-gray-500" />
+                    <span className="text-gray-900 font-light text-[14px]">{getPriceLabel()}</span>
+                    <ChevronDown
+                      className={`h-4 w-4 text-gray-400 transition-transform ${isPriceOpen ? "rotate-180" : ""}`}
+                    />
                   </button>
 
-                  {activeFilter === "price" && (
-                    <div className="absolute top-full left-0 mt-2 bg-white border border-gray-200 rounded-xl shadow-lg z-[1000] min-w-80 p-4">
+                  {isPriceOpen && (
+                    <div className="absolute top-full left-0 mt-2 bg-white border border-gray-200 rounded-xl shadow-lg z-[100] min-w-80 p-4">
                       <div className="space-y-4">
                         <div className="grid grid-cols-2 gap-3">
                           <div>
-                            <label className="block text-xs font-light text-gray-500 mb-1">From</label>
+                            <label className="block text-xs font-light text-gray-500 mb-1">From (€)</label>
                             <input
                               type="text"
                               placeholder="0"
                               value={priceFrom}
                               onChange={(e) => setPriceFrom(formatPriceInput(e.target.value))}
-                              className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-1 focus:ring-gray-300 focus:border-gray-300 outline-none"
-                              onClick={(e) => e.stopPropagation()}
+                              className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-1 focus:ring-gray-300 focus:border-gray-300 outline-none bg-white text-gray-900"
                             />
                           </div>
                           <div>
-                            <label className="block text-xs font-light text-gray-500 mb-1">To</label>
+                            <label className="block text-xs font-light text-gray-500 mb-1">To (€)</label>
                             <input
                               type="text"
                               placeholder="Any"
                               value={priceTo}
                               onChange={(e) => setPriceTo(formatPriceInput(e.target.value))}
-                              className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-1 focus:ring-gray-300 focus:border-gray-300 outline-none"
-                              onClick={(e) => e.stopPropagation()}
+                              className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-1 focus:ring-gray-300 focus:border-gray-300 outline-none bg-white text-gray-900"
                             />
-                          </div>
-                        </div>
-
-                        <div className="space-y-2">
-                          <p className="text-xs font-light text-gray-500">Quick select:</p>
-                          <div className="grid grid-cols-2 gap-2">
-                            {priceRanges.map((range) => (
-                              <button
-                                key={range.label}
-                                onClick={() => handlePriceChange(range.label)}
-                                className="text-left px-3 py-2 text-sm border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors font-light"
-                              >
-                                {range.label}
-                              </button>
-                            ))}
                           </div>
                         </div>
 
                         <div className="flex justify-between items-center pt-2">
                           <button
-                            onClick={() => {
-                              setPriceFrom("")
-                              setPriceTo("")
-                              if (onFiltersChange) {
-                                onFiltersChange({
-                                  ...filters,
-                                  min_price: null,
-                                  max_price: null,
-                                })
-                              }
-                              setActiveFilter(null)
-                            }}
+                            type="button"
+                            onClick={clearPriceFilter}
                             className="text-xs text-gray-500 hover:text-gray-700 font-light"
                           >
                             Clear
                           </button>
-
                           <button
-                            onClick={() => {
-                              const minPrice = priceFrom ? parsePriceInput(priceFrom) : null
-                              const maxPrice = priceTo ? parsePriceInput(priceTo) : null
-
-                              if (onFiltersChange) {
-                                onFiltersChange({
-                                  ...filters,
-                                  min_price: minPrice,
-                                  max_price: maxPrice,
-                                })
-                              }
-                              setActiveFilter(null)
-                            }}
+                            type="button"
+                            onClick={applyPriceFilter}
                             className="bg-[#5784FF] text-white px-4 py-2 rounded-lg text-xs font-light hover:bg-[#4a70e0] transition-colors"
                           >
                             Apply
@@ -510,29 +474,31 @@ export function ListingsHeader({
                 {/* Property Type Filter */}
                 <div className="relative" ref={typeRef}>
                   <button
-                    onClick={() => setActiveFilter(activeFilter === "type" ? null : "type")}
-                    className={`flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg border ${
-                      activeFilter === "type" ? "border-gray-400 bg-gray-50" : "border-gray-200 bg-white"
-                    } hover:border-gray-300 transition-all duration-200`}
+                    type="button"
+                    onClick={() => setIsTypeOpen(!isTypeOpen)}
+                    className={`flex items-center gap-2 px-3 py-1 rounded-lg border transition-all duration-200 ${
+                      isTypeOpen ? "border-gray-400 bg-gray-50" : "border-gray-200 bg-white hover:border-gray-300"
+                    }`}
                   >
-                    <Home className="h-3.5 w-3.5 text-gray-500" />
-                    <span className="text-gray-900 font-light text-[14px]">{filters.property_type || "Type"}</span>
-                    <ChevronDown className="h-3.5 w-3.5 text-gray-400" />
+                    <Home className="h-4 w-4 text-gray-500" />
+                    <span className="text-gray-900 font-light text-[14px]">{getTypeLabel()}</span>
+                    <ChevronDown
+                      className={`h-4 w-4 text-gray-400 transition-transform ${isTypeOpen ? "rotate-180" : ""}`}
+                    />
                   </button>
 
-                  {activeFilter === "type" && (
-                    <div className="absolute top-full left-0 mt-2 bg-white border border-gray-200 rounded-xl shadow-lg z-[999] min-w-48">
+                  {isTypeOpen && (
+                    <div className="absolute top-full left-0 mt-2 bg-white border border-gray-200 rounded-xl shadow-lg z-[100] min-w-48">
                       <div className="py-2">
                         {propertyTypes.map((type) => (
                           <button
                             key={type}
-                            onClick={() => {
-                              updateFilter("property_type", type === "Any Type" ? null : type)
-                              setActiveFilter(null)
-                            }}
-                            className="w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors font-light text-sm"
+                            type="button"
+                            onClick={() => togglePropertyType(type)}
+                            className="w-full px-4 py-2 text-left hover:bg-gray-50 transition-colors flex items-center justify-between"
                           >
-                            {type}
+                            <span className="text-gray-900 font-light text-[14px]">{type}</span>
+                            {selectedTypes.includes(type) && <Check className="h-4 w-4 text-[#5784FF]" />}
                           </button>
                         ))}
                       </div>
@@ -543,31 +509,33 @@ export function ListingsHeader({
                 {/* Bedrooms Filter */}
                 <div className="relative" ref={bedsRef}>
                   <button
-                    onClick={() => setActiveFilter(activeFilter === "beds" ? null : "beds")}
-                    className={`flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg border ${
-                      activeFilter === "beds" ? "border-gray-400 bg-gray-50" : "border-gray-200 bg-white"
-                    } hover:border-gray-300 transition-all duration-200`}
+                    type="button"
+                    onClick={() => setIsBedsOpen(!isBedsOpen)}
+                    className={`flex items-center gap-2 px-3 py-1 rounded-lg border transition-all duration-200 ${
+                      isBedsOpen ? "border-gray-400 bg-gray-50" : "border-gray-200 bg-white hover:border-gray-300"
+                    }`}
                   >
-                    <Bed className="h-3.5 w-3.5 text-gray-500" />
-                    <span className="text-gray-900 font-light text-[14px]">
-                      {filters.bedrooms ? `${filters.bedrooms} Beds` : "Beds"}
-                    </span>
-                    <ChevronDown className="h-3.5 w-3.5 text-gray-400" />
+                    <Bed className="h-4 w-4 text-gray-500" />
+                    <span className="text-gray-900 font-light text-[14px]">{getBedsLabel()}</span>
+                    <ChevronDown
+                      className={`h-4 w-4 text-gray-400 transition-transform ${isBedsOpen ? "rotate-180" : ""}`}
+                    />
                   </button>
 
-                  {activeFilter === "beds" && (
-                    <div className="absolute top-full left-0 mt-2 bg-white border border-gray-200 rounded-xl shadow-lg z-[999] min-w-32">
+                  {isBedsOpen && (
+                    <div className="absolute top-full left-0 mt-2 bg-white border border-gray-200 rounded-xl shadow-lg z-[100] min-w-48">
                       <div className="py-2">
-                        {bedroomOptions.map((option) => (
+                        {bedroomOptions.map((bed) => (
                           <button
-                            key={option}
-                            onClick={() => {
-                              updateFilter("bedrooms", option === "Any" ? null : Number.parseInt(option))
-                              setActiveFilter(null)
-                            }}
-                            className="w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors font-light text-sm"
+                            key={bed}
+                            type="button"
+                            onClick={() => toggleBedroom(bed)}
+                            className="w-full px-4 py-2 text-left hover:bg-gray-50 transition-colors flex items-center justify-between"
                           >
-                            {option}
+                            <span className="text-gray-900 font-light text-[14px]">
+                              {bed === "Studio" ? "Studio" : `${bed} Bedroom${bed !== "1" ? "s" : ""}`}
+                            </span>
+                            {selectedBeds.includes(bed) && <Check className="h-4 w-4 text-[#5784FF]" />}
                           </button>
                         ))}
                       </div>
@@ -575,18 +543,53 @@ export function ListingsHeader({
                   )}
                 </div>
 
+                {/* Category Buttons */}
+                <div className="flex items-center gap-2 border-l border-gray-200 pl-4 ml-2">
+                  <Link
+                    href="/listings?category=new-building"
+                    className={`px-3 py-1 rounded-lg text-[14px] font-light transition-all duration-200 ${
+                      activeCategory === "new-building"
+                        ? "bg-[#5784FF] text-white"
+                        : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                    }`}
+                  >
+                    New Building
+                  </Link>
+                  <Link
+                    href="/listings?category=secondary"
+                    className={`px-3 py-1 rounded-lg text-[14px] font-light transition-all duration-200 ${
+                      activeCategory === "secondary"
+                        ? "bg-[#5784FF] text-white"
+                        : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                    }`}
+                  >
+                    Secondary
+                  </Link>
+                  <Link
+                    href="/listings?category=rentals"
+                    className={`px-3 py-1 rounded-lg text-[14px] font-light transition-all duration-200 ${
+                      activeCategory === "rentals"
+                        ? "bg-[#5784FF] text-white"
+                        : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                    }`}
+                  >
+                    Rentals
+                  </Link>
+                </div>
+
                 {/* Amenities */}
-                <div className="flex items-center gap-2 border-l border-gray-200 pl-3 ml-2">
+                <div className="flex items-center gap-2 border-l border-gray-200 pl-4 ml-2">
                   <Button
                     variant="ghost"
                     size="sm"
                     onClick={() => toggleOption("pool")}
-                    className={`
-                transition-all duration-200 font-light text-xs h-6 px-2
-                ${filters.pool ? "bg-gray-100 text-gray-900" : "text-gray-600 hover:text-gray-900"}
-              `}
+                    className={`transition-all duration-200 font-light text-[14px] h-6 px-2 ${
+                      filters.pool
+                        ? "bg-[#5784FF] text-white hover:bg-[#4a70e0]"
+                        : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+                    }`}
                   >
-                    <Waves className="h-2 w-2 mr-1" />
+                    <Waves className="h-3 w-3 mr-1" />
                     Pool
                   </Button>
 
@@ -594,12 +597,13 @@ export function ListingsHeader({
                     variant="ghost"
                     size="sm"
                     onClick={() => toggleOption("garden")}
-                    className={`
-                transition-all duration-200 font-light text-xs h-6 px-2
-                ${filters.garden ? "bg-gray-100 text-gray-900" : "text-gray-600 hover:text-gray-900"}
-              `}
+                    className={`transition-all duration-200 font-light text-[14px] h-6 px-2 ${
+                      filters.garden
+                        ? "bg-[#5784FF] text-white hover:bg-[#4a70e0]"
+                        : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+                    }`}
                   >
-                    <TreePine className="h-2 w-2 mr-1" />
+                    <TreePine className="h-3 w-3 mr-1" />
                     Garden
                   </Button>
 
@@ -607,28 +611,35 @@ export function ListingsHeader({
                     variant="ghost"
                     size="sm"
                     onClick={() => toggleOption("garage")}
-                    className={`
-                transition-all duration-200 font-light text-xs h-6 px-2
-                ${filters.garage ? "bg-gray-100 text-gray-900" : "text-gray-600 hover:text-gray-900"}
-              `}
+                    className={`transition-all duration-200 font-light text-[14px] h-6 px-2 ${
+                      filters.garage
+                        ? "bg-[#5784FF] text-white hover:bg-[#4a70e0]"
+                        : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+                    }`}
                   >
-                    <Car className="h-2 w-2 mr-1" />
+                    <Car className="h-3 w-3 mr-1" />
                     Garage
                   </Button>
                 </div>
-
-                {/* Clear Filters */}
-                {hasActiveFilters && onClearFilters && (
-                  <Button
-                    variant="ghost"
-                    onClick={onClearFilters}
-                    className="text-gray-500 hover:text-gray-700 font-light text-xs h-6 px-2 border-l border-gray-200 ml-2 pl-3"
-                  >
-                    <X className="h-3 w-3 mr-1" />
-                    Clear
-                  </Button>
-                )}
               </div>
+
+              {/* Right Side - Clear Filters */}
+              {hasActiveFilters && onClearFilters && (
+                <Button
+                  variant="ghost"
+                  onClick={() => {
+                    setSelectedTypes([])
+                    setSelectedBeds([])
+                    setPriceFrom("")
+                    setPriceTo("")
+                    onClearFilters()
+                  }}
+                  className="text-gray-500 hover:text-gray-700 font-light text-sm"
+                >
+                  <X className="h-4 w-4 mr-1" />
+                  Clear All
+                </Button>
+              )}
             </div>
           </div>
         </div>

@@ -149,22 +149,22 @@ export function Filters({ filters, onFiltersChange, onClearFilters }: FiltersPro
 
   const FilterChip = ({ id, label, icon: Icon, isActive, onClick, children }: any) => (
     <div className="relative" ref={(el) => (filterRefs.current[id] = el)}>
-      <Button
-        variant="outline"
-        onClick={(e) => {
-          e.preventDefault()
+      <button
+        type="button"
+        onClick={() => {
+          console.log(`${id} filter clicked, current state:`, activeFilter)
           onClick()
         }}
         className={`
-          border-gray-200 hover:border-gray-300 transition-all duration-200 font-light text-sm h-9 px-4
-          ${isActive ? "bg-gray-50 border-gray-300" : "bg-white"}
-          ${children ? "pr-8" : ""}
-        `}
+        border-gray-200 hover:border-gray-300 transition-all duration-200 font-light text-sm h-9 px-4 rounded-lg border
+        ${isActive ? "bg-gray-50 border-gray-300" : "bg-white"}
+        flex items-center gap-2
+      `}
       >
-        {Icon && <Icon className="h-3 w-3 mr-2 text-gray-500" />}
+        {Icon && <Icon className="h-3 w-3 text-gray-500" />}
         {label}
-        {children && <ChevronDown className="h-3 w-3 ml-2 text-gray-400" />}
-      </Button>
+        {children && <ChevronDown className="h-3 w-3 text-gray-400" />}
+      </button>
       {children}
     </div>
   )
@@ -187,7 +187,7 @@ export function Filters({ filters, onFiltersChange, onClearFilters }: FiltersPro
           </div>
 
           {isSearchOpen && (
-            <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-100 rounded-xl shadow-lg z-50 max-h-80 overflow-y-auto">
+            <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-100 rounded-xl shadow-lg z-[100] max-h-80 overflow-y-auto">
               {searchLoading ? (
                 <div className="p-4 text-center text-gray-400 font-light text-sm">Searching...</div>
               ) : searchResults.length > 0 ? (
@@ -249,16 +249,13 @@ export function Filters({ filters, onFiltersChange, onClearFilters }: FiltersPro
           onClick={() => setActiveFilter(activeFilter === "price" ? null : "price")}
         >
           {activeFilter === "price" && (
-            <div className="absolute top-full left-0 mt-2 bg-white border border-gray-100 rounded-xl shadow-lg z-50 min-w-48">
+            <div className="absolute top-full left-0 mt-2 bg-white border border-gray-100 rounded-xl shadow-lg z-[9999] min-w-48">
               <div className="py-2">
                 {priceRanges.map((range) => (
                   <button
                     key={range.label}
-                    onClick={(e) => {
-                      e.preventDefault()
-                      e.stopPropagation()
-                      handlePriceChange(range.label)
-                    }}
+                    type="button"
+                    onClick={() => handlePriceChange(range.label)}
                     className="w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors font-light text-sm"
                   >
                     {range.label}
@@ -278,7 +275,7 @@ export function Filters({ filters, onFiltersChange, onClearFilters }: FiltersPro
           onClick={() => setActiveFilter(activeFilter === "type" ? null : "type")}
         >
           {activeFilter === "type" && (
-            <div className="absolute top-full left-0 mt-2 bg-white border border-gray-100 rounded-xl shadow-lg z-50 min-w-48">
+            <div className="absolute top-full left-0 mt-2 bg-white border border-gray-100 rounded-xl shadow-lg z-[100] min-w-48">
               <div className="py-2">
                 {propertyTypes.map((type) => (
                   <button
@@ -308,7 +305,7 @@ export function Filters({ filters, onFiltersChange, onClearFilters }: FiltersPro
           onClick={() => setActiveFilter(activeFilter === "beds" ? null : "beds")}
         >
           {activeFilter === "beds" && (
-            <div className="absolute top-full left-0 mt-2 bg-white border border-gray-100 rounded-xl shadow-lg z-50 min-w-32">
+            <div className="absolute top-full left-0 mt-2 bg-white border border-gray-100 rounded-xl shadow-lg z-[100] min-w-32">
               <div className="py-2">
                 {bedroomOptions.map((option) => (
                   <button
@@ -338,7 +335,7 @@ export function Filters({ filters, onFiltersChange, onClearFilters }: FiltersPro
           onClick={() => setActiveFilter(activeFilter === "location" ? null : "location")}
         >
           {activeFilter === "location" && (
-            <div className="absolute top-full left-0 mt-2 bg-white border border-gray-100 rounded-xl shadow-lg z-50 min-w-48 max-h-80 overflow-y-auto">
+            <div className="absolute top-full left-0 mt-2 bg-white border border-gray-100 rounded-xl shadow-lg z-[100] min-w-48 max-h-80 overflow-y-auto">
               <div className="py-2">
                 <button
                   onClick={(e) => {
