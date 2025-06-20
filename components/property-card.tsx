@@ -4,7 +4,7 @@ import type React from "react"
 
 import { useState } from "react"
 import Image from "next/image"
-import { ChevronLeft, ChevronRight, MapPin, Bed, Bath, Square, Heart } from "lucide-react"
+import { ChevronLeft, ChevronRight, MapPin, Bed, Bath, Square, Heart, Calendar } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import type { Property } from "@/types/property"
 
@@ -35,13 +35,60 @@ export function PropertyCard({ property, onClick }: PropertyCardProps) {
     setIsFavorited(!isFavorited)
   }
 
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(price)
+  const formatPrice = (property: Property) => {
+    const currency = property.currency || "EUR"
+
+    const formatSinglePrice = (value: number) => {
+      if (value === 0) return "Price on request"
+      return new Intl.NumberFormat("de-DE", {
+        style: "currency",
+        currency: currency,
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0,
+      }).format(value)
+    }
+
+    // Handle rentals with short-term pricing
+    if (property.category === "rentals" && property.shortterm_low && property.shortterm_high) {
+      if (property.shortterm_low === property.shortterm_high) {
+        return `${formatSinglePrice(property.shortterm_low)}/week`
+      }
+      return `${formatSinglePrice(property.shortterm_low)} - ${formatSinglePrice(property.shortterm_high)}/week`
+    }
+
+    // Handle rentals with long-term pricing
+    if (property.category === "rentals" && property.longterm) {
+      return `${formatSinglePrice(property.longterm)}/month`
+    }
+
+    // Handle sale properties with price range
+    if (property.price_to && property.price_to > property.price) {
+      return `${formatSinglePrice(property.price)} - ${formatSinglePrice(property.price_to)}`
+    }
+
+    // Single price
+    return formatSinglePrice(property.price)
+  }
+
+  const formatRange = (from?: number, to?: number, unit = "") => {
+    if (!from) return ""
+    if (to && to !== from) {
+      return `${from} - ${to}${unit}`
+    }
+    return `${from}${unit}`
+  }
+
+  const getPropertyLabel = () => {
+    if (property.category === "new_building") return "New Building"
+    if (property.category === "rentals") return "For Rent"
+    if (property.category === "secondary") return "Resale"
+    return "Property"
+  }
+
+  const formatCompletionDate = (dateString?: string) => {
+    if (!dateString) return ""
+    const date = new Date(dateString)
+    return date.toLocaleDateString("en-US", { year: "numeric", month: "short" })
   }
 
   return (
@@ -63,9 +110,11 @@ export function PropertyCard({ property, onClick }: PropertyCardProps) {
         {/* Labels */}
         <div className="absolute top-4 left-4 flex gap-2">
           <span className="px-3 py-1 bg-white/90 backdrop-blur-sm rounded-full text-xs font-light text-gray-900">
-            Video
+            {getPropertyLabel()}
           </span>
-          <span className="px-3 py-1 bg-[#C9A77C] text-white rounded-full text-xs font-light">Promoted</span>
+          {property.status === "Available" && (
+            <span className="px-3 py-1 bg-green-500 text-white rounded-full text-xs font-light">Available</span>
+          )}
         </div>
 
         {/* Favorite Button */}
@@ -120,26 +169,30 @@ export function PropertyCard({ property, onClick }: PropertyCardProps) {
       {/* Content */}
       <div className="space-y-3">
         {/* Price */}
-        <div className="text-lg font-light text-gray-900">{formatPrice(property.price)}</div>
+        <div className="text-lg font-light text-gray-900">{formatPrice(property)}</div>
 
         {/* Property Details */}
         <div className="flex items-center space-x-6 text-gray-600">
-          {property.bedrooms && (
+          {(property.beds || property.bedrooms) && (
             <div className="flex items-center space-x-1">
               <Bed className="h-3 w-3" />
-              <span className="font-light text-sm">{property.bedrooms}</span>
+              <span className="font-light text-sm">
+                {formatRange(property.beds || property.bedrooms, property.beds_to)}
+              </span>
             </div>
           )}
-          {property.bathrooms && (
+          {(property.baths || property.bathrooms) && (
             <div className="flex items-center space-x-1">
               <Bath className="h-3 w-3" />
-              <span className="font-light text-sm">{property.bathrooms}</span>
+              <span className="font-light text-sm">
+                {formatRange(property.baths || property.bathrooms, property.baths_to)}
+              </span>
             </div>
           )}
-          {property.area && (
+          {property.built && (
             <div className="flex items-center space-x-1">
               <Square className="h-3 w-3" />
-              <span className="font-light text-sm">{property.area} sqm</span>
+              <span className="font-light text-sm">{formatRange(property.built, property.built_to, " m²")}</span>
             </div>
           )}
         </div>
@@ -147,7 +200,9 @@ export function PropertyCard({ property, onClick }: PropertyCardProps) {
         {/* Location */}
         <div className="flex items-center text-gray-500">
           <MapPin className="h-3 w-3 mr-1" />
-          <span className="font-light text-sm">{property.town || "Prime Location"}</span>
+          <span className="font-light text-sm">
+            {[property.area, property.town, property.province].filter(Boolean).join(", ") || "Prime Location"}
+          </span>
         </div>
 
         {/* Development Name */}
@@ -155,9 +210,24 @@ export function PropertyCard({ property, onClick }: PropertyCardProps) {
           {property.development_name || "Luxury Property"}
         </h3>
 
+        {/* Property Type */}
+        {(property.type_uk || property.subtype_uk) && (
+          <div className="text-xs text-gray-500 font-light">{property.subtype_uk || property.type_uk}</div>
+        )}
+
+        {/* Completion Date for New Buildings */}
+        {property.category === "new_building" && property.completion_date && (
+          <div className="flex items-center text-xs text-blue-600">
+            <Calendar className="h-3 w-3 mr-1" />
+            <span className="font-light">Completion: {formatCompletionDate(property.completion_date)}</span>
+          </div>
+        )}
+
         {/* Description */}
-        {property.description && (
-          <p className="text-gray-500 font-light text-sm line-clamp-2 leading-relaxed">{property.description}</p>
+        {(property.description_uk || property.description) && (
+          <p className="text-gray-500 font-light text-sm line-clamp-2 leading-relaxed">
+            {property.description_uk || property.description}
+          </p>
         )}
       </div>
     </div>

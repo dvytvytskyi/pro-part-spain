@@ -1,0 +1,14 @@
+{
+  "taxRates": {
+    "New Property": { "VAT": 0.1, "StampDuty": 0.012 },
+    "Second Hand": { "TransferTax": 0.07 },
+    "Plot_Private Individual": { "TransferTax": 0.07 },
+    "Plot_Company": { "VAT": 0.21, "StampDuty": 0.012 }
+  },
+  "feeRates": {
+    "LawyerFeePct": 0.01,
+    "NotaryFeePct": 0.008,
+    "RegistryFeePct": 0.006,
+    "BankTransferFlat": 100
+  }
+}

@@ -28,6 +28,12 @@ import {
 import { Button } from "@/components/ui/button"
 import { HomeHeader } from "@/components/home-header"
 import { InvestorContactForm } from "@/components/investor-contact-form"
+import { LegalAdviceModal } from "@/components/legal-advice-modal"
+import { TaxCounselingModal } from "@/components/tax-counseling-modal"
+import { FinancingGuaranteesModal } from "@/components/financing-guarantees-modal"
+import { RiskAssessmentModal } from "@/components/risk-assessment-modal"
+import { CommercialNegotiationsModal } from "@/components/commercial-negotiations-modal"
+import { TransactionSupportModal } from "@/components/transaction-support-modal"
 
 const categories = [
   {
@@ -381,6 +387,13 @@ function NewsletterSignup() {
 }
 
 export default function HomePage() {
+  const [isLegalAdviceModalOpen, setIsLegalAdviceModalOpen] = useState(false)
+  const [isTaxCounselingModalOpen, setIsTaxCounselingModalOpen] = useState(false)
+  const [isFinancingGuaranteesModalOpen, setIsFinancingGuaranteesModalOpen] = useState(false)
+  const [isRiskAssessmentModalOpen, setIsRiskAssessmentModalOpen] = useState(false)
+  const [isCommercialNegotiationsModalOpen, setIsCommercialNegotiationsModalOpen] = useState(false)
+  const [isTransactionSupportModalOpen, setIsTransactionSupportModalOpen] = useState(false)
+
   return (
     <div className="min-h-screen bg-white">
       <HomeHeader />
@@ -660,7 +673,10 @@ export default function HomePage() {
 
           <div className="grid grid-cols-12 gap-4">
             {/* Legal advice - Large card */}
-            <div className="col-span-12 md:col-span-6 group">
+            <div
+              className="col-span-12 md:col-span-6 group cursor-pointer"
+              onClick={() => setIsLegalAdviceModalOpen(true)}
+            >
               <div className="bg-gray-50 rounded-3xl p-8 hover:bg-gray-100 transition-all duration-500 hover:scale-[1.02] hover:shadow-[0_20px_40px_rgba(0,0,0,0.08)] h-full relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-gray-200/30 to-transparent rounded-full -translate-y-16 translate-x-16"></div>
                 <div className="relative z-10 h-full flex flex-col justify-between">
@@ -686,7 +702,10 @@ export default function HomePage() {
             </div>
 
             {/* Tax Counseling */}
-            <div className="col-span-12 md:col-span-6 lg:col-span-3 group">
+            <div
+              className="col-span-12 md:col-span-6 lg:col-span-3 group cursor-pointer"
+              onClick={() => setIsTaxCounselingModalOpen(true)}
+            >
               <div className="bg-black text-white rounded-3xl p-6 hover:bg-gray-900 transition-all duration-500 hover:scale-[1.02] hover:shadow-[0_20px_40px_rgba(0,0,0,0.15)] h-full relative overflow-hidden">
                 <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-white/10 to-transparent rounded-full translate-y-12 -translate-x-12"></div>
                 <div className="relative z-10 h-full flex flex-col justify-between">
@@ -709,7 +728,10 @@ export default function HomePage() {
             </div>
 
             {/* Financing and Guarantees */}
-            <div className="col-span-12 md:col-span-6 lg:col-span-3 group">
+            <div
+              className="col-span-12 md:col-span-6 lg:col-span-3 group cursor-pointer"
+              onClick={() => setIsFinancingGuaranteesModalOpen(true)}
+            >
               <div className="bg-gray-50 rounded-3xl p-6 hover:bg-gray-100 transition-all duration-500 hover:scale-[1.02] hover:shadow-[0_20px_40px_rgba(0,0,0,0.08)] h-full border border-gray-100">
                 <div className="h-full flex flex-col justify-between">
                   <div>
@@ -731,7 +753,10 @@ export default function HomePage() {
             </div>
 
             {/* Risk Assessment */}
-            <div className="col-span-12 md:col-span-4 group">
+            <div
+              className="col-span-12 md:col-span-4 group cursor-pointer"
+              onClick={() => setIsRiskAssessmentModalOpen(true)}
+            >
               <div className="bg-gray-50 rounded-3xl p-6 hover:bg-gray-100 transition-all duration-500 hover:scale-[1.02] hover:shadow-[0_20px_40px_rgba(0,0,0,0.08)] h-full border border-gray-100">
                 <div className="h-full flex flex-col justify-between">
                   <div>
@@ -752,7 +777,10 @@ export default function HomePage() {
             </div>
 
             {/* Commercial Negotiations */}
-            <div className="col-span-12 md:col-span-4 group">
+            <div
+              className="col-span-12 md:col-span-4 group cursor-pointer"
+              onClick={() => setIsCommercialNegotiationsModalOpen(true)}
+            >
               <div className="bg-black text-white rounded-3xl p-6 hover:bg-gray-900 transition-all duration-500 hover:scale-[1.02] hover:shadow-[0_20px_40px_rgba(0,0,0,0.15)] h-full relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-white/10 to-transparent rounded-full -translate-y-10 translate-x-10"></div>
                 <div className="relative z-10 h-full flex flex-col justify-between">
@@ -774,7 +802,10 @@ export default function HomePage() {
             </div>
 
             {/* Transaction support */}
-            <div className="col-span-12 md:col-span-4 group">
+            <div
+              className="col-span-12 md:col-span-4 group cursor-pointer"
+              onClick={() => setIsTransactionSupportModalOpen(true)}
+            >
               <div className="bg-gray-50 rounded-3xl p-6 hover:bg-gray-100 transition-all duration-500 hover:scale-[1.02] hover:shadow-[0_20px_40px_rgba(0,0,0,0.08)] h-full border border-gray-100">
                 <div className="h-full flex flex-col justify-between">
                   <div>
@@ -895,7 +926,7 @@ export default function HomePage() {
           </div>
 
           {/* Interactive Grid Layout */}
-          <div className="grid grid-cols-12 gap-4 h-[800px]">
+          <div className="grid grid-cols-12 gap-4 h-[500px]">
             {/* Golden Mile - Large Feature */}
             <Link href="/guides/golden-mile" className="col-span-12 md:col-span-5 row-span-2 group">
               <div className="h-full bg-gray-50 rounded-3xl p-8 hover:bg-gray-100 transition-all duration-500 hover:scale-[1.02] hover:shadow-[0_20px_40px_rgba(0,0,0,0.08)] relative overflow-hidden">
@@ -988,88 +1019,6 @@ export default function HomePage() {
                   </div>
                   <div className="flex items-center text-xs font-medium text-gray-900 group-hover:translate-x-2 transition-transform duration-300">
                     View Guide
-                    <ChevronRight className="h-3 w-3 ml-2" />
-                  </div>
-                </div>
-              </div>
-            </Link>
-
-            {/* Sierra Blanca & Nueva Andalucía - Combined */}
-            <Link href="/guides/sierra-blanca" className="col-span-6 md:col-span-3 group">
-              <div className="h-full bg-black rounded-3xl p-6 hover:bg-gray-900 transition-all duration-500 hover:scale-[1.02] hover:shadow-[0_20px_40px_rgba(0,0,0,0.15)] relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-white/10 to-transparent rounded-full -translate-y-10 translate-x-10"></div>
-                <div className="relative z-10 h-full flex flex-col justify-between">
-                  <div>
-                    <div className="text-xs font-light text-white/60 mb-2 tracking-wider uppercase">Area Guide</div>
-                    <h3 className="text-lg font-light text-white mb-3">Sierra Blanca</h3>
-                    <p className="text-xs text-white/80 font-light leading-relaxed">
-                      Elevated luxury living with panoramic sea views.
-                    </p>
-                  </div>
-                  <div className="flex items-center text-xs font-medium text-white group-hover:translate-x-2 transition-transform duration-300">
-                    Explore
-                    <ChevronRight className="h-3 w-3 ml-2" />
-                  </div>
-                </div>
-              </div>
-            </Link>
-
-            {/* Mortgage Calculator */}
-            <Link href="/tools/mortgage-calculator" className="col-span-6 md:col-span-2 group">
-              <div className="h-full bg-gray-50 rounded-3xl p-6 hover:bg-gray-100 transition-all duration-500 hover:scale-[1.02] hover:shadow-[0_20px_40px_rgba(0,0,0,0.08)] border border-gray-100">
-                <div className="h-full flex flex-col justify-between">
-                  <div>
-                    <div className="text-xs font-light text-gray-500 mb-2 tracking-wider uppercase">Calculator</div>
-                    <h3 className="text-sm font-light text-gray-900 mb-3">Mortgage Calculator</h3>
-                    <p className="text-xs text-gray-600 font-light leading-relaxed">
-                      Estimate monthly payments and costs.
-                    </p>
-                  </div>
-                  <div className="flex items-center text-xs font-medium text-gray-900 group-hover:translate-x-2 transition-transform duration-300">
-                    Calculate
-                    <ChevronRight className="h-3 w-3 ml-2" />
-                  </div>
-                </div>
-              </div>
-            </Link>
-
-            {/* Sales & Trends - Wide */}
-            <Link href="/guides/sales-trends" className="col-span-12 md:col-span-7 group">
-              <div className="h-full bg-gray-50 rounded-3xl p-8 hover:bg-gray-100 transition-all duration-500 hover:scale-[1.02] hover:shadow-[0_20px_40px_rgba(0,0,0,0.08)] border border-gray-100 relative overflow-hidden">
-                <div className="absolute bottom-0 right-0 w-40 h-40 bg-gradient-to-tl from-gray-200/30 to-transparent rounded-full translate-y-20 translate-x-20"></div>
-                <div className="relative z-10 h-full flex flex-col justify-between">
-                  <div>
-                    <div className="text-xs font-light text-gray-500 mb-2 tracking-wider uppercase">Market Data</div>
-                    <h3 className="text-xl font-light text-gray-900 mb-4">Sales & Trends</h3>
-                    <p className="text-sm text-gray-600 font-light leading-relaxed max-w-md">
-                      Recent sales data, asking prices, and market trends across Marbella's luxury real estate market.
-                    </p>
-                  </div>
-                  <div className="flex items-center text-xs font-medium text-gray-900 group-hover:translate-x-2 transition-transform duration-300">
-                    View Market Data
-                    <ChevronRight className="h-3 w-3 ml-2" />
-                  </div>
-                </div>
-              </div>
-            </Link>
-
-            {/* All Guides */}
-            <Link href="/guides" className="col-span-12 md:col-span-5 group">
-              <div className="h-full bg-black rounded-3xl p-8 hover:bg-gray-900 transition-all duration-500 hover:scale-[1.02] hover:shadow-[0_20px_40px_rgba(0,0,0,0.15)] relative overflow-hidden">
-                <div className="absolute top-0 left-0 w-32 h-32 bg-gradient-to-br from-white/10 to-transparent rounded-full -translate-y-16 -translate-x-16"></div>
-                <div className="relative z-10 h-full flex flex-col justify-between">
-                  <div>
-                    <div className="text-xs font-light text-white/60 mb-2 tracking-wider uppercase">
-                      Complete Collection
-                    </div>
-                    <h3 className="text-xl font-light text-white mb-4">All Area Guides</h3>
-                    <p className="text-sm text-white/80 font-light leading-relaxed max-w-sm">
-                      Comprehensive guides covering every neighbourhood, from Marbella Center to Nueva Andalucía and
-                      beyond.
-                    </p>
-                  </div>
-                  <div className="flex items-center text-xs font-medium text-white group-hover:translate-x-2 transition-transform duration-300">
-                    Browse All Guides
                     <ChevronRight className="h-3 w-3 ml-2" />
                   </div>
                 </div>
@@ -1302,6 +1251,23 @@ export default function HomePage() {
           </div>
         </div>
       </footer>
+
+      {/* All Modals */}
+      <LegalAdviceModal isOpen={isLegalAdviceModalOpen} onClose={() => setIsLegalAdviceModalOpen(false)} />
+      <TaxCounselingModal isOpen={isTaxCounselingModalOpen} onClose={() => setIsTaxCounselingModalOpen(false)} />
+      <FinancingGuaranteesModal
+        isOpen={isFinancingGuaranteesModalOpen}
+        onClose={() => setIsFinancingGuaranteesModalOpen(false)}
+      />
+      <RiskAssessmentModal isOpen={isRiskAssessmentModalOpen} onClose={() => setIsRiskAssessmentModalOpen(false)} />
+      <CommercialNegotiationsModal
+        isOpen={isCommercialNegotiationsModalOpen}
+        onClose={() => setIsCommercialNegotiationsModalOpen(false)}
+      />
+      <TransactionSupportModal
+        isOpen={isTransactionSupportModalOpen}
+        onClose={() => setIsTransactionSupportModalOpen(false)}
+      />
     </div>
   )
 }

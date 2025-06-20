@@ -21,6 +21,7 @@ import {
   Check,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { FilterModal } from "./filter-modal"
 import type { FilterState } from "@/types/property"
 
 const popularLocations = [
@@ -47,6 +48,8 @@ interface ListingsHeaderProps {
   onClearFilters?: () => void
   showSearch?: boolean
   showFilters?: boolean
+  activeCategory?: string
+  onCategoryChange?: (category: string) => void
 }
 
 export function ListingsHeader({
@@ -55,6 +58,8 @@ export function ListingsHeader({
   onClearFilters,
   showSearch = true,
   showFilters = true,
+  activeCategory = "new-building",
+  onCategoryChange,
 }: ListingsHeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
@@ -62,6 +67,7 @@ export function ListingsHeader({
   const [selectedLocations, setSelectedLocations] = useState<string[]>([])
   const [filteredLocations, setFilteredLocations] = useState<string[]>([])
   const [showMaxWarning, setShowMaxWarning] = useState(false)
+  const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false)
 
   // Filter states
   const [isPriceOpen, setIsPriceOpen] = useState(false)
@@ -71,7 +77,6 @@ export function ListingsHeader({
   const [priceTo, setPriceTo] = useState("")
   const [selectedTypes, setSelectedTypes] = useState<string[]>([])
   const [selectedBeds, setSelectedBeds] = useState<string[]>([])
-  const [activeCategory, setActiveCategory] = useState<string>("new-building")
 
   const searchRef = useRef<HTMLDivElement>(null)
   const priceRef = useRef<HTMLDivElement>(null)
@@ -232,11 +237,6 @@ export function ListingsHeader({
   }
 
   const getPriceLabel = () => {
-    if (priceFrom || priceTo) {
-      const from = priceFrom || "0"
-      const to = priceTo || "Any"
-      return `€${from} - €${to}`
-    }
     return "Price"
   }
 
@@ -261,6 +261,12 @@ export function ListingsHeader({
     filters.garden ||
     filters.garage
 
+  const handleCategoryChange = (category: string) => {
+    if (onCategoryChange) {
+      onCategoryChange(category)
+    }
+  }
+
   return (
     <header className="bg-white border-b border-gray-100 relative sticky top-0 z-50">
       {/* Top Container */}
@@ -278,7 +284,7 @@ export function ListingsHeader({
 
           {/* Center - Search (only show if showSearch is true) */}
           {showSearch && (
-            <div ref={searchRef} className="relative w-[35%] min-w-[400px] max-w-[600px]">
+            <div ref={searchRef} className="relative w-[35%] min-w-[400px] max-w-[600px] hidden md:block">
               <form onSubmit={handleSearch}>
                 <div className="relative">
                   {/* Search Icon */}
@@ -405,7 +411,8 @@ export function ListingsHeader({
       {showFilters && (
         <div className="border-t border-gray-100">
           <div className="max-w-7xl mx-auto px-6 py-4">
-            <div className="flex items-center justify-between">
+            {/* Desktop Filters */}
+            <div className="hidden md:flex items-center justify-between">
               {/* Left Side - Filters */}
               <div className="flex items-center gap-4">
                 {/* Price Filter */}
@@ -461,7 +468,7 @@ export function ListingsHeader({
                           <button
                             type="button"
                             onClick={applyPriceFilter}
-                            className="bg-[#5784FF] text-white px-4 py-2 rounded-lg text-xs font-light hover:bg-[#4a70e0] transition-colors"
+                            className="bg-black text-white px-4 py-2 rounded-lg text-xs font-light hover:bg-gray-800 transition-colors"
                           >
                             Apply
                           </button>
@@ -498,7 +505,7 @@ export function ListingsHeader({
                             className="w-full px-4 py-2 text-left hover:bg-gray-50 transition-colors flex items-center justify-between"
                           >
                             <span className="text-gray-900 font-light text-[14px]">{type}</span>
-                            {selectedTypes.includes(type) && <Check className="h-4 w-4 text-[#5784FF]" />}
+                            {selectedTypes.includes(type) && <Check className="h-4 w-4 text-black" />}
                           </button>
                         ))}
                       </div>
@@ -535,7 +542,7 @@ export function ListingsHeader({
                             <span className="text-gray-900 font-light text-[14px]">
                               {bed === "Studio" ? "Studio" : `${bed} Bedroom${bed !== "1" ? "s" : ""}`}
                             </span>
-                            {selectedBeds.includes(bed) && <Check className="h-4 w-4 text-[#5784FF]" />}
+                            {selectedBeds.includes(bed) && <Check className="h-4 w-4 text-black" />}
                           </button>
                         ))}
                       </div>
@@ -545,36 +552,36 @@ export function ListingsHeader({
 
                 {/* Category Buttons */}
                 <div className="flex items-center gap-2 border-l border-gray-200 pl-4 ml-2">
-                  <Link
-                    href="/listings?category=new-building"
+                  <button
+                    onClick={() => handleCategoryChange("new-building")}
                     className={`px-3 py-1 rounded-lg text-[14px] font-light transition-all duration-200 ${
                       activeCategory === "new-building"
-                        ? "bg-[#5784FF] text-white"
+                        ? "bg-black text-white"
                         : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                     }`}
                   >
                     New Building
-                  </Link>
-                  <Link
-                    href="/listings?category=secondary"
+                  </button>
+                  <button
+                    onClick={() => handleCategoryChange("secondary")}
                     className={`px-3 py-1 rounded-lg text-[14px] font-light transition-all duration-200 ${
                       activeCategory === "secondary"
-                        ? "bg-[#5784FF] text-white"
+                        ? "bg-black text-white"
                         : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                     }`}
                   >
                     Secondary
-                  </Link>
-                  <Link
-                    href="/listings?category=rentals"
+                  </button>
+                  <button
+                    onClick={() => handleCategoryChange("rentals")}
                     className={`px-3 py-1 rounded-lg text-[14px] font-light transition-all duration-200 ${
                       activeCategory === "rentals"
-                        ? "bg-[#5784FF] text-white"
+                        ? "bg-black text-white"
                         : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                     }`}
                   >
                     Rentals
-                  </Link>
+                  </button>
                 </div>
 
                 {/* Amenities */}
@@ -585,7 +592,7 @@ export function ListingsHeader({
                     onClick={() => toggleOption("pool")}
                     className={`transition-all duration-200 font-light text-[14px] h-6 px-2 ${
                       filters.pool
-                        ? "bg-[#5784FF] text-white hover:bg-[#4a70e0]"
+                        ? "bg-black text-white hover:bg-gray-800"
                         : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
                     }`}
                   >
@@ -599,7 +606,7 @@ export function ListingsHeader({
                     onClick={() => toggleOption("garden")}
                     className={`transition-all duration-200 font-light text-[14px] h-6 px-2 ${
                       filters.garden
-                        ? "bg-[#5784FF] text-white hover:bg-[#4a70e0]"
+                        ? "bg-black text-white hover:bg-gray-800"
                         : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
                     }`}
                   >
@@ -613,7 +620,7 @@ export function ListingsHeader({
                     onClick={() => toggleOption("garage")}
                     className={`transition-all duration-200 font-light text-[14px] h-6 px-2 ${
                       filters.garage
-                        ? "bg-[#5784FF] text-white hover:bg-[#4a70e0]"
+                        ? "bg-black text-white hover:bg-gray-800"
                         : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
                     }`}
                   >
@@ -640,6 +647,46 @@ export function ListingsHeader({
                   Clear All
                 </Button>
               )}
+            </div>
+
+            {/* Mobile Filters Button */}
+            <div className="flex md:hidden items-center justify-between">
+              <Button
+                onClick={() => setIsMobileFiltersOpen(true)}
+                className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-900 font-light text-sm"
+              >
+                <Search className="h-4 w-4" />
+                Filters & Search
+                {hasActiveFilters && <div className="w-2 h-2 bg-red-500 rounded-full"></div>}
+              </Button>
+
+              {/* Category Buttons - Mobile */}
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => handleCategoryChange("new-building")}
+                  className={`px-3 py-1 rounded-lg text-xs font-light transition-all duration-200 ${
+                    activeCategory === "new-building" ? "bg-black text-white" : "bg-gray-100 text-gray-700"
+                  }`}
+                >
+                  New
+                </button>
+                <button
+                  onClick={() => handleCategoryChange("secondary")}
+                  className={`px-3 py-1 rounded-lg text-xs font-light transition-all duration-200 ${
+                    activeCategory === "secondary" ? "bg-black text-white" : "bg-gray-100 text-gray-700"
+                  }`}
+                >
+                  Secondary
+                </button>
+                <button
+                  onClick={() => handleCategoryChange("rentals")}
+                  className={`px-3 py-1 rounded-lg text-xs font-light transition-all duration-200 ${
+                    activeCategory === "rentals" ? "bg-black text-white" : "bg-gray-100 text-gray-700"
+                  }`}
+                >
+                  Rentals
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -686,6 +733,7 @@ export function ListingsHeader({
                 variant="ghost"
                 size="sm"
                 className="w-full justify-start text-gray-700 font-light text-[14px] px-0"
+                onClick={() => setMobileMenuOpen(false)}
               >
                 Log In
               </Button>
@@ -698,6 +746,15 @@ export function ListingsHeader({
       {mobileMenuOpen && (
         <div className="fixed inset-0 bg-[#5784FF]/20 z-30" onClick={() => setMobileMenuOpen(false)} />
       )}
+
+      {/* Global Filter Modal */}
+      <FilterModal
+        isOpen={isMobileFiltersOpen}
+        onClose={() => setIsMobileFiltersOpen(false)}
+        filters={filters}
+        onFiltersChange={onFiltersChange || (() => {})}
+        onClearFilters={onClearFilters || (() => {})}
+      />
     </header>
   )
 }

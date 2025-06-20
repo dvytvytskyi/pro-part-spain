@@ -43,6 +43,20 @@ export function HomeHeader() {
     return () => window.removeEventListener("scroll", handleScroll)
   }, [lastScrollY])
 
+  // Prevent body scroll when menu is open
+  useEffect(() => {
+    if (mobileMenuOpen) {
+      document.body.style.overflow = "hidden"
+    } else {
+      document.body.style.overflow = "unset"
+    }
+
+    // Cleanup on unmount
+    return () => {
+      document.body.style.overflow = "unset"
+    }
+  }, [mobileMenuOpen])
+
   return (
     <>
       <header
@@ -55,7 +69,12 @@ export function HomeHeader() {
           <div className="flex items-center justify-between">
             {/* Left Side - Burger + Logo */}
             <div className="flex items-center space-x-4">
-              <Button variant="ghost" size="sm" onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="p-1">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="p-1 z-50 relative"
+              >
                 {mobileMenuOpen ? (
                   <X className={`h-4 w-4 ${isScrolled ? "text-gray-700" : "text-white"}`} />
                 ) : (
@@ -114,17 +133,20 @@ export function HomeHeader() {
         </div>
       </header>
 
-      {/* Slide-out Menu */}
+      {/* Overlay - Higher z-index */}
+      {mobileMenuOpen && <div className="fixed inset-0 bg-black/50 z-[60]" onClick={() => setMobileMenuOpen(false)} />}
+
+      {/* Slide-out Menu - Highest z-index */}
       <div
-        className={`fixed top-0 left-0 h-full w-1/4 bg-white z-40 transform transition-transform duration-300 ease-in-out shadow-xl ${
+        className={`fixed top-0 left-0 h-full w-80 md:w-1/4 bg-white z-[70] transform transition-transform duration-300 ease-in-out shadow-2xl ${
           mobileMenuOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
-        <div className="p-6 pt-20">
-          <nav className="space-y-4">
+        <div className="p-6 pt-20 h-full overflow-y-auto">
+          <nav className="space-y-6">
             <Link
               href="/"
-              className="block text-gray-700 hover:text-[#C9A77C] transition-colors duration-200 text-[14px] font-light"
+              className="block text-gray-700 hover:text-[#C9A77C] transition-colors duration-200 text-[16px] font-light py-2"
               onClick={() => setMobileMenuOpen(false)}
             >
               Home
@@ -133,48 +155,52 @@ export function HomeHeader() {
               <Link
                 key={category.name}
                 href={category.href}
-                className="block text-gray-700 hover:text-[#5784FF] transition-colors duration-200 text-[14px] font-light"
+                className="block text-gray-700 hover:text-[#5784FF] transition-colors duration-200 text-[16px] font-light py-2"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 {category.name}
               </Link>
             ))}
-            <div className="pt-4 border-t border-gray-100 space-y-4">
+            <Link
+              href="/map"
+              className="block text-gray-700 hover:text-[#C9A77C] transition-colors duration-200 text-[16px] font-light py-2"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              Map
+            </Link>
+            <div className="pt-6 border-t border-gray-100 space-y-6">
               <Link
                 href="/blog"
-                className="block text-gray-700 hover:text-[#C9A77C] transition-colors duration-200 text-[14px] font-light"
+                className="block text-gray-700 hover:text-[#C9A77C] transition-colors duration-200 text-[16px] font-light py-2"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Blog
               </Link>
               <Link
                 href="/about"
-                className="block text-gray-700 hover:text-[#C9A77C] transition-colors duration-200 text-[14px] font-light"
+                className="block text-gray-700 hover:text-[#C9A77C] transition-colors duration-200 text-[16px] font-light py-2"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 About
               </Link>
               <Link
                 href="/contact"
-                className="block text-gray-700 hover:text-[#C9A77C] transition-colors duration-200 text-[14px] font-light"
+                className="block text-gray-700 hover:text-[#C9A77C] transition-colors duration-200 text-[16px] font-light py-2"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Contact
               </Link>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="w-full justify-start text-gray-700 font-light text-[14px] px-0"
+              <Link
+                href="/auth"
+                className="block text-gray-700 hover:text-[#C9A77C] transition-colors duration-200 text-[16px] font-light py-2"
+                onClick={() => setMobileMenuOpen(false)}
               >
                 Log In
-              </Button>
+              </Link>
             </div>
           </nav>
         </div>
       </div>
-
-      {/* Overlay */}
-      {mobileMenuOpen && <div className="fixed inset-0 bg-black/20 z-30" onClick={() => setMobileMenuOpen(false)} />}
     </>
   )
 }

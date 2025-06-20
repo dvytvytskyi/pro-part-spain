@@ -1,37 +1,75 @@
 export interface Property {
-  id: number | string
-  development_name?: string | null
-  town?: string | null
+  id: number
+  created_at?: string
+  external_id?: string
+  status_date?: number
+  status?: string
+  listed_date?: number
+  last_updated?: number
+  ref?: string
+  category?: string
+  development_name?: string
+  urbanisation_name?: string
   price: number
-  area?: number | null
-  bedrooms?: number | null
-  bathrooms?: number | null
-  property_type?: string | null
-  description?: string | null
-  gallery?: string[] | null
-  pool?: boolean | null
-  garden?: boolean | null
-  garage?: boolean | null
-  created_at?: string | null
-  updated_at?: string | null
+  price_to?: number
+  currency?: string
+  shortterm_low?: number
+  shortterm_high?: number
+  longterm?: number
+  start_date?: string
+  building_license?: boolean
+  completion_date?: string
+  latitude?: number
+  longitude?: number
+  type_uk?: string
+  type_es?: string
+  subtype_uk?: string
+  subtype_es?: string
+  country?: string
+  province?: string
+  town?: string
+  area?: string
+  beds?: number
+  beds_to?: number
+  baths?: number
+  baths_to?: number
+  levels?: number
+  built?: number
+  built_to?: number
+  terrace?: number
+  terrace_to?: number
+  plot?: number
+  plot_to?: number
+  energy_value?: number
+  energy_letter?: string
+  own_property?: boolean
+  has_pool?: boolean
+  has_garden?: boolean
+  has_garage?: boolean
+  description_uk?: string
+  description_es?: string
+  // Legacy fields for compatibility
+  bedrooms?: number
+  bathrooms?: number
+  property_type?: string
+  description?: string
+  gallery?: string[]
+  pool?: boolean
+  garden?: boolean
+  garage?: boolean
+  updated_at?: string
 }
 
 export interface FilterState {
-  min_price?: number | null
-  max_price?: number | null
-  min_area?: number | null
-  max_area?: number | null
-  bedrooms?: number | null
-  property_type?: string | null
-  town?: string | null
-  development_name?: string | null
-  pool?: boolean | null
-  garden?: boolean | null
-  garage?: boolean | null
-}
-
-export interface ApiResponse {
-  data?: Property[]
-  properties?: Property[]
-  results?: Property[]
+  min_price?: number
+  max_price?: number
+  min_area?: number
+  max_area?: number
+  bedrooms?: number
+  property_type?: string
+  town?: string
+  development_name?: string
+  pool?: boolean
+  garden?: boolean
+  garage?: boolean
 }
