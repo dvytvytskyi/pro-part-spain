@@ -94,9 +94,7 @@ export class ApiClient {
         params.append(key, value.toString())
       }
     })
-
-    const url = `${API_BASE_URL}/property${params.toString() ? `?${params.toString()}` : ""}`
-    console.log("API Request URL:", url)
+    const url = `${API_BASE_URL}/properties${params.toString() ? `?${params.toString()}` : ""}`
 
     const response = await fetch(url, {
       method: "GET",
@@ -111,14 +109,13 @@ export class ApiClient {
     const data = await response.json()
     console.log("API Response:", data)
 
-    // Handle different response structures
     if (Array.isArray(data)) {
       return {
         data,
         total: data.length,
         page: filters.page || 1,
-        per_page: filters.per_page || 30,
-        total_pages: Math.ceil(data.length / (filters.per_page || 30)),
+        per_page: filters.per_page || 12,
+        total_pages: Math.ceil(data.length / (filters.per_page || 12)),
       }
     }
 
@@ -126,12 +123,11 @@ export class ApiClient {
   }
 
   async getProperty(propertyId: string | number): Promise<any> {
-    const url = `${API_BASE_URL}/property/${propertyId}`
+    const url = `${API_BASE_URL}/properties/${propertyId}`
     console.log("API Request URL:", url)
 
     const response = await fetch(url, {
       method: "GET",
-      headers: this.getHeaders(),
     })
 
     if (!response.ok) {
