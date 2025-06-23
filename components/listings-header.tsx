@@ -261,7 +261,13 @@ export function ListingsHeader({
     filters.garden ||
     filters.garage
 
-  const handleCategoryChange = (category: string) => {
+  const handleCategoryChange = (category: string, propertyStatus: string) => {
+    if (onFiltersChange) {
+      onFiltersChange({
+        ...filters,
+        propertyStatus,
+      })
+    }
     if (onCategoryChange) {
       onCategoryChange(category)
     }
@@ -553,7 +559,7 @@ export function ListingsHeader({
                 {/* Category Buttons */}
                 <div className="flex items-center gap-2 border-l border-gray-200 pl-4 ml-2">
                   <button
-                    onClick={() => handleCategoryChange("new-building")}
+                    onClick={() => handleCategoryChange("new-building", "new building")}
                     className={`px-3 py-1 rounded-lg text-[14px] font-light transition-all duration-200 ${
                       activeCategory === "new-building"
                         ? "bg-black text-white"
@@ -563,7 +569,7 @@ export function ListingsHeader({
                     New Building
                   </button>
                   <button
-                    onClick={() => handleCategoryChange("secondary")}
+                    onClick={() => handleCategoryChange("secondary", "secondary")}
                     className={`px-3 py-1 rounded-lg text-[14px] font-light transition-all duration-200 ${
                       activeCategory === "secondary"
                         ? "bg-black text-white"
@@ -573,7 +579,7 @@ export function ListingsHeader({
                     Secondary
                   </button>
                   <button
-                    onClick={() => handleCategoryChange("rentals")}
+                    onClick={() => handleCategoryChange("rentals", "rent")}
                     className={`px-3 py-1 rounded-lg text-[14px] font-light transition-all duration-200 ${
                       activeCategory === "rentals"
                         ? "bg-black text-white"

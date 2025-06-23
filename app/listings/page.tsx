@@ -197,7 +197,7 @@ export default function ListingsPage() {
 
         <div className="py-4 mb-4">
           <h2 className="text-xl font-light text-gray-900">
-            {getCategoryTitle()} ({displayedProperties.length} listings)
+            {getCategoryTitle()}
           </h2>
         </div>
 

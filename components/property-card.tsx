@@ -157,7 +157,7 @@ export function PropertyCard({ property, onClick }: PropertyCardProps) {
             className="absolute bottom-4 left-1/2 -translate-x-1/2 w-full px-4 flex justify-center"
           >
             <div
-              className="flex gap-1 max-w-[150px] overflow-x-auto"
+              className="flex gap-1 max-w-[80px] overflow-x-auto"
               style={{
                   scrollSnapType: "x mandatory",
                   overflowX: "scroll",
