@@ -18,7 +18,7 @@ export function PropertyCard({ property, onClick }: PropertyCardProps) {
   const [isHovered, setIsHovered] = useState(false)
   const [isFavorited, setIsFavorited] = useState(false)
 
-  const images = property.gallery || ["/placeholder.svg?height=400&width=600"]
+  const images = property.images || ["/placeholder.svg?height=400&width=600"]
 
   const nextImage = (e: React.MouseEvent) => {
     e.stopPropagation()
@@ -101,7 +101,7 @@ export function PropertyCard({ property, onClick }: PropertyCardProps) {
       {/* Image Gallery */}
       <div className="relative h-72 overflow-hidden rounded-lg mb-4 bg-gray-100">
         <Image
-          src={images[currentImageIndex] || "/placeholder.svg"}
+          src={images[currentImageIndex].image_url || "/placeholder.svg"}
           alt={property.development_name || "Property"}
           fill
           className="object-cover transition-transform duration-500 group-hover:scale-105"
@@ -153,15 +153,32 @@ export function PropertyCard({ property, onClick }: PropertyCardProps) {
 
         {/* Image Indicators */}
         {images.length > 1 && (
-          <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-1">
-            {images.map((_, index) => (
-              <div
-                key={index}
-                className={`w-2 h-2 rounded-full transition-all duration-200 ${
-                  index === currentImageIndex ? "bg-white" : "bg-white/50"
-                }`}
-              />
-            ))}
+          <div
+            className="absolute bottom-4 left-1/2 -translate-x-1/2 w-full px-4 flex justify-center"
+          >
+            <div
+              className="flex gap-1 max-w-[150px] overflow-x-auto"
+              style={{
+                  scrollSnapType: "x mandatory",
+                  overflowX: "scroll",
+                  scrollbarWidth: "none", // Firefox
+                  msOverflowStyle: "none", // IE and Edge
+                }}
+            >
+              {images.map((_, index) => (
+                <div
+                  key={index}
+                  className={`w-2 h-2 flex-shrink-0 rounded-full transition-all duration-200 scroll-snap-align-center ${
+                    index === currentImageIndex ? "bg-white" : "bg-white/50"
+                  }`}
+                  ref={(el) => {
+                    if (index === currentImageIndex && el) {
+                      el.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" })
+                    }
+                  }}
+                />
+              ))}
+            </div>
           </div>
         )}
       </div>
