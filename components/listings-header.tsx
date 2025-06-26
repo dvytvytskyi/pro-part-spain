@@ -174,7 +174,13 @@ export function ListingsHeader({
   }
 
   const toggleOption = (key: "pool" | "garden" | "garage") => {
-    updateFilter(key, !filters[key])
+    if (filters[key]) {
+      const updatedFilters = { ...filters }
+      delete updatedFilters[key]
+      onFiltersChange(updatedFilters)
+    } else {
+      updateFilter(key, true)
+    }
   }
 
   const formatPriceInput = (value: string) => {
@@ -265,7 +271,7 @@ export function ListingsHeader({
     if (onFiltersChange) {
       onFiltersChange({
         ...filters,
-        propertyStatus,
+        property_status: propertyStatus
       })
     }
     if (onCategoryChange) {
@@ -669,7 +675,7 @@ export function ListingsHeader({
               {/* Category Buttons - Mobile */}
               <div className="flex items-center gap-2">
                 <button
-                  onClick={() => handleCategoryChange("new-building")}
+                  onClick={() => handleCategoryChange("new-building", "new building")}
                   className={`px-3 py-1 rounded-lg text-xs font-light transition-all duration-200 ${
                     activeCategory === "new-building" ? "bg-black text-white" : "bg-gray-100 text-gray-700"
                   }`}
@@ -677,7 +683,7 @@ export function ListingsHeader({
                   New
                 </button>
                 <button
-                  onClick={() => handleCategoryChange("secondary")}
+                  onClick={() => handleCategoryChange("secondary", "secondary")}
                   className={`px-3 py-1 rounded-lg text-xs font-light transition-all duration-200 ${
                     activeCategory === "secondary" ? "bg-black text-white" : "bg-gray-100 text-gray-700"
                   }`}
@@ -685,7 +691,7 @@ export function ListingsHeader({
                   Secondary
                 </button>
                 <button
-                  onClick={() => handleCategoryChange("rentals")}
+                  onClick={() => handleCategoryChange("rentals", "rent")}
                   className={`px-3 py-1 rounded-lg text-xs font-light transition-all duration-200 ${
                     activeCategory === "rentals" ? "bg-black text-white" : "bg-gray-100 text-gray-700"
                   }`}

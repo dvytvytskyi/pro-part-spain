@@ -173,7 +173,7 @@ export function PropertyCard({ property, onClick }: PropertyCardProps) {
                   }`}
                   ref={(el) => {
                     if (index === currentImageIndex && el) {
-                      el.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" })
+                      // el.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" })
                     }
                   }}
                 />

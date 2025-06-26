@@ -88,12 +88,20 @@ export class ApiClient {
   async getProperties(filters: ApiFilters = {}): Promise<ApiResponse<any>> {
     const params = new URLSearchParams()
 
-    // Add all filters as query parameters
     Object.entries(filters).forEach(([key, value]) => {
       if (value !== undefined && value !== null && value !== "") {
-        params.append(key, value.toString())
+        if (Array.isArray(value)) {
+          value.forEach((v) => params.append(key, v.toString()))
+        } else if (typeof value === "string" && value.includes(",") && key === "bedrooms") {
+          value.split(",").forEach((v) => params.append(key, v))
+        } else if (typeof value === "string" && value.includes(",") && key === "property_type") {
+          value.split(",").forEach((v) => params.append(key, v))
+        } else {
+          params.append(key, value.toString())
+        }
       }
     })
+
     const url = `${API_BASE_URL}/properties${params.toString() ? `?${params.toString()}` : ""}`
 
     const response = await fetch(url, {

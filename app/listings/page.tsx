@@ -7,7 +7,7 @@ import { PropertyCard } from "@/components/property-card"
 import { LoadingSpinner } from "@/components/loading-spinner"
 import { Button } from "@/components/ui/button"
 import { useFilters } from "@/hooks/use-filters"
-import type { FilterState, Property } from "@/types/property"
+import type { FilterState } from "@/types/property"
 import { apiClient } from "@/lib/api"
 
 export default function ListingsPage() {
@@ -15,15 +15,13 @@ export default function ListingsPage() {
   const searchParams = useSearchParams()
   const [initialized, setInitialized] = useState(false)
   const [isAuthenticated, setIsAuthenticated] = useState(false)
-  const [activeCategory, setActiveCategory] = useState("new-building")
-  const [displayedProperties, setDisplayedProperties] = useState<Property[]>([])
+  const [activeCategory, setActiveCategory] = useState("new building")
+  const [displayedProperties, setDisplayedProperties] = useState([])
   const [currentPage, setCurrentPage] = useState(1)
   const [loading, setLoading] = useState(false)
   const [nextPage, setNextPage] = useState<number | null>(null)
 
   const { filters, updateFilters, clearFilters, initializeFromURL } = useFilters()
-
-  const PROPERTIES_PER_PAGE = 6
 
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("currentUser") || "{}")
@@ -93,25 +91,6 @@ export default function ListingsPage() {
     router.replace(newURL, { scroll: false })
   }, [filters, activeCategory, initialized, router])
 
-  // useEffect(() => {
-  //   let scrollTimeout: NodeJS.Timeout | null = null
-
-  //   const handleScroll = () => {
-  //     if (scrollTimeout) return
-  //     scrollTimeout = setTimeout(() => {
-  //       sessionStorage.setItem("listingsScrollPosition", window.scrollY.toString())
-  //       scrollTimeout = null
-  //     }, 200)
-  //   }
-
-  //   window.addEventListener("scroll", handleScroll, { passive: true })
-
-  //   return () => {
-  //     window.removeEventListener("scroll", handleScroll)
-  //     if (scrollTimeout) clearTimeout(scrollTimeout)
-  //   }
-  // }, [])
-
   const handleFilterChange = (newFilters: FilterState) => {
     updateFilters(newFilters)
   }
@@ -125,8 +104,6 @@ export default function ListingsPage() {
   }
 
   const handlePropertySelect = (id: number | string) => {
-    sessionStorage.setItem("listingsScrollPosition", window.scrollY.toString())
-
     if (activeCategory === "rentals") {
       router.push(`/rental/${id}`)
     } else if (activeCategory === "secondary") {

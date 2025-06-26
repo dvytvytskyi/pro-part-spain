@@ -1,59 +1,72 @@
-"use client"
+"use client";
 
-import { useEffect, useRef, useState } from "react"
-import type { Map } from "leaflet" // Import the Map type from Leaflet
+import { useEffect, useRef, useState } from "react";
+import type { Map } from "leaflet"; // Import the Map type from Leaflet
 
 interface ProjectMapProps {
-  latitude: number
-  longitude: number
-  projectName: string
+  latitude: number;
+  longitude: number;
+  projectName: string;
 }
 
-export function ProjectMap({ latitude, longitude, projectName }: ProjectMapProps) {
-  const mapRef = useRef<HTMLDivElement>(null)
-  const [mapLoaded, setMapLoaded] = useState(false)
+export function ProjectMap({
+  latitude,
+  longitude,
+  projectName,
+}: ProjectMapProps) {
+  const mapRef = useRef<HTMLDivElement>(null);
+  const [mapLoaded, setMapLoaded] = useState(false);
   // Use the specific Leaflet Map type for better type safety
-  const mapInstanceRef = useRef<Map | null>(null)
+  const mapInstanceRef = useRef<Map | null>(null);
 
   useEffect(() => {
-    // Prevent map from initializing multiple times
-    if (mapRef.current && !mapInstanceRef.current) {
-      // Dynamically import Leaflet to ensure it's only loaded on the client-side
-      import("leaflet").then((L) => {
-        // Since we're in this block, mapRef.current is guaranteed to be non-null
-        // and the map instance hasn't been created yet.
-        const map = L.map(mapRef.current!).setView([latitude, longitude], 15)
-        mapInstanceRef.current = map
+    let map: Map | null = null;
 
-        // Add the OpenStreetMap tile layer
+    if (mapRef.current && !mapInstanceRef.current) {
+      import("leaflet").then((L) => {
+        // 🧹 Перевіряємо, чи вже є карта в контейнері
+        if (mapRef.current && mapRef.current._leaflet_id != null) {
+          // @ts-ignore — приватна властивість, але ми її видаляємо
+          delete mapRef.current._leaflet_id;
+        }
+
+        map = L.map(mapRef.current!).setView([latitude, longitude], 15);
+        mapInstanceRef.current = map;
+
         L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
           maxZoom: 19,
-          attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-        }).addTo(map)
+          attribution:
+            '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        }).addTo(map);
 
-        // Create a custom SVG icon.
-        // This is a great way to create markers without external image files.
         const customIcon = L.divIcon({
           html: `
-            <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="16" cy="16" r="12" fill="#C9A77C" stroke="white" stroke-width="3"/>
-              <circle cx="16" cy="16" r="4" fill="white"/>
-            </svg>
-          `,
-          className: "", // No extra classes needed, styling is in the SVG
+          <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="16" cy="16" r="12" fill="#C9A77C" stroke="white" stroke-width="3"/>
+            <circle cx="16" cy="16" r="4" fill="white"/>
+          </svg>
+        `,
+          className: "",
           iconSize: [32, 32],
-          iconAnchor: [16, 16], // Anchor point of the icon (center)
-        })
+          iconAnchor: [16, 16],
+        });
 
-        // Add the marker to the map
         L.marker([latitude, longitude], { icon: customIcon })
           .addTo(map)
-          .bindPopup(`<b>${projectName}</b>`) // Add a popup with the project name
+          .bindPopup(`<b>${projectName}</b>`);
 
-        setMapLoaded(true)
-      })
+        setMapLoaded(true);
+      });
     }
-  }, [latitude, longitude, projectName]) // Re-run if coordinates change
+
+    // 🧹 Очищення (cleanup)
+    return () => {
+      if (mapInstanceRef.current) {
+        mapInstanceRef.current.remove(); // знищити карту
+        mapInstanceRef.current = null;
+      }
+    };
+  }, [latitude, longitude, projectName]);
 
   return (
     <div className="space-y-3">
@@ -74,5 +87,5 @@ export function ProjectMap({ latitude, longitude, projectName }: ProjectMapProps
         )}
       </div>
     </div>
-  )
+  );
 }
