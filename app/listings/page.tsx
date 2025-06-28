@@ -57,8 +57,8 @@ export default function ListingsPage() {
       try {
         const res = await apiClient.getProperties({
           ...filters,
-          category: activeCategory,
           curPage: currentPage,
+          perPage: 12
         })
 
         setDisplayedProperties(res.items)
@@ -120,8 +120,8 @@ export default function ListingsPage() {
     try {
       const res = await apiClient.getProperties({
         ...filters,
-        category: activeCategory,
         curPage: currentPage + 1,
+        perPage: 12
       })
 
       setDisplayedProperties(prev => [...prev, ...res.items])
