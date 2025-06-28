@@ -15,7 +15,7 @@ export default function ListingsPage() {
   const searchParams = useSearchParams()
   const [initialized, setInitialized] = useState(false)
   const [isAuthenticated, setIsAuthenticated] = useState(false)
-  const [activeCategory, setActiveCategory] = useState("new building")
+  const [activeCategory, setActiveCategory] = useState("new-building")
   const [displayedProperties, setDisplayedProperties] = useState([])
   const [currentPage, setCurrentPage] = useState(1)
   const [loading, setLoading] = useState(false)
@@ -119,7 +119,7 @@ export default function ListingsPage() {
     setLoading(true)
     try {
       const res = await apiClient.getProperties({
-        filters,
+        ...filters,
         category: activeCategory,
         curPage: currentPage + 1,
       })
