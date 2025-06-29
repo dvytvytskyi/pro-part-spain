@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button"
 import { useFilters } from "@/hooks/use-filters"
 import type { FilterState } from "@/types/property"
 import { apiClient } from "@/lib/api"
+import Link from 'next/link'
 
 export default function ListingsPage() {
   const router = useRouter()
@@ -103,16 +104,6 @@ export default function ListingsPage() {
     setActiveCategory(category)
   }
 
-  const handlePropertySelect = (id: number | string) => {
-    if (activeCategory === "rentals") {
-      router.push(`/rental/${id}`)
-    } else if (activeCategory === "secondary") {
-      router.push(`/secondary/${id}`)
-    } else {
-      router.push(`/new-building/${id}`)
-    }
-  }
-
   const handleLoadMore = async () => {
     if (!nextPage) return
 
@@ -182,11 +173,11 @@ export default function ListingsPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {displayedProperties.length > 0 ? (
               displayedProperties.map((property) => (
-                <PropertyCard
-                  key={property.id}
-                  property={property}
-                  onClick={() => handlePropertySelect(property.id)}
-                />
+                <Link key={property.id} href={`/property/${property.id}`} target="_blank">
+                  <PropertyCard
+                    property={property}
+                  />
+                </Link>
               ))
             ) : (
               !loading && (
