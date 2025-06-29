@@ -23,7 +23,7 @@ jobs:
       - name: Copy files to server
         run: |
           rsync -avz --exclude=node_modules --exclude=.git ./ \
-            ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }}:/home/${{ secrets.SSH_USERNAME }/var/www/spain/pro-part-spain
+            ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }}:/home/${{ secrets.SSH_USERNAME }}/var/www/spain/pro-part-spain
 
       - name: Run Docker on server
         run: |
