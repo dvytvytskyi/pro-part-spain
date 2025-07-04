@@ -47,7 +47,7 @@ export function PropertyCard({ property }: PropertyCardProps) {
     const currency = property.currency || "EUR";
 
     const formatSinglePrice = (value: number) => {
-      if (value === 0) return "Price on request";
+      if (!value || value === 0) return "Price on request";
       return new Intl.NumberFormat("de-DE", {
         style: "currency",
         currency: currency,
@@ -56,12 +56,12 @@ export function PropertyCard({ property }: PropertyCardProps) {
       }).format(value);
     };
 
-    // Handle rentals with short-term pricing
-    if (
-      property.category === "rentals" &&
-      property.shortterm_low &&
-      property.shortterm_high
-    ) {
+    const isRental =
+      property.category === "rentals" ||
+      property.property_status?.toLowerCase() === "rent";
+
+    // Short-term rental
+    if (isRental && property.shortterm_low && property.shortterm_high) {
       if (property.shortterm_low === property.shortterm_high) {
         return `${formatSinglePrice(property.shortterm_low)}/week`;
       }
@@ -70,19 +70,18 @@ export function PropertyCard({ property }: PropertyCardProps) {
       )} - ${formatSinglePrice(property.shortterm_high)}/week`;
     }
 
-    // Handle rentals with long-term pricing
-    if (property.category === "rentals" && property.longterm) {
+    // Long-term rental
+    if (isRental && property.longterm) {
       return `${formatSinglePrice(property.longterm)}/month`;
     }
 
-    // Handle sale properties with price range
+    // Sale with range
     if (property.price_to && property.price_to > property.price) {
       return `${formatSinglePrice(property.price)} - ${formatSinglePrice(
         property.price_to
       )}`;
     }
 
-    // Single price
     return formatSinglePrice(property.price);
   };
 
@@ -95,9 +94,12 @@ export function PropertyCard({ property }: PropertyCardProps) {
   };
 
   const getPropertyLabel = () => {
-    if (property.category === "new_building") return "New Building";
-    if (property.category === "rentals") return "For Rent";
-    if (property.category === "secondary") return "Resale";
+    const category = property.category;
+    const status = property.property_status?.toLowerCase();
+
+    if (category === "new_building") return "New Building";
+    if (category === "rentals" || status === "rent") return "For Rent";
+    if (category === "secondary") return "Resale";
     return "Property";
   };
 
@@ -135,6 +137,14 @@ export function PropertyCard({ property }: PropertyCardProps) {
       behavior: "smooth",
     });
   }, [currentImageIndex]);
+const formatCurrency = (value?: number, currency: string = "EUR") => {
+  if (!value || value === 0) return null;
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency,
+    maximumFractionDigits: 0,
+  }).format(value);
+};
 
   return (
     <div
@@ -185,9 +195,9 @@ export function PropertyCard({ property }: PropertyCardProps) {
             <Button
               variant="ghost"
               size="sm"
-              onClick={e => {
-                e.preventDefault()
-                prevImage(e)
+              onClick={(e) => {
+                e.preventDefault();
+                prevImage(e);
               }}
               className="absolute left-4 top-1/2 transform -translate-y-1/2 w-10 h-10 rounded-full bg-white/90 backdrop-blur-sm hover:bg-white transition-all duration-200"
             >
@@ -196,9 +206,9 @@ export function PropertyCard({ property }: PropertyCardProps) {
             <Button
               variant="ghost"
               size="sm"
-              onClick={e => {
-                e.preventDefault()
-                nextImage(e)
+              onClick={(e) => {
+                e.preventDefault();
+                nextImage(e);
               }}
               className="absolute right-4 top-1/2 transform -translate-y-1/2 w-10 h-10 rounded-full bg-white/90 backdrop-blur-sm hover:bg-white transition-all duration-200"
             >
@@ -236,9 +246,27 @@ export function PropertyCard({ property }: PropertyCardProps) {
       {/* Content */}
       <div className="space-y-3">
         {/* Price */}
-        <div className="text-lg font-light text-gray-900">
-          {formatPrice(property)}
-        </div>
+        {property.property_status?.toLowerCase() === "rent" ||
+        property.category === "rentals" ? (
+          <div className="space-y-1">
+            {[
+              { label: "shortterm low", value: property.shortterm_low },
+              { label: "shortterm high", value: property.shortterm_high },
+              { label: "longterm", value: property.longterm },
+            ].map(({ label, value }) => {
+              const formatted = formatCurrency(value, property.currency);
+              return formatted ? (
+                <div key={label} className="text-mg font-light text-gray-900">
+                  {label}: {formatted}
+                </div>
+              ) : null;
+            })}
+          </div>
+        ) : (
+          <div className="text-lg font-light text-gray-900">
+            {formatPrice(property)}
+          </div>
+        )}
 
         {/* Property Details */}
         <div className="flex items-center space-x-6 text-gray-600">

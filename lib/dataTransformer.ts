@@ -49,6 +49,9 @@ export function transformApiDataToProject(apiData: ApiPropertyResponse): Project
     price: apiData.price,
     price_to: apiData.price_to,
     currency: apiData.currency,
+    shortterm_low: apiData.shortterm_low,
+    shortterm_high: apiData.shortterm_high,
+    longterm: apiData.longterm,
     start_date: apiData.start_date,
     completion_date: apiData.completion_date,
     latitude: apiData.latitude,
@@ -83,6 +86,7 @@ export function transformApiDataToProject(apiData: ApiPropertyResponse): Project
     status_date: new Date(apiData.status_date).toISOString(),
     listed_date: new Date(apiData.listed_date).toISOString(),
     last_updated: new Date(apiData.last_updated).toISOString(),
+    property_status: apiData.property_status,
 
     // Fields not in API response - provide defaults
     subtype_es: null, // No Spanish subtype in API data

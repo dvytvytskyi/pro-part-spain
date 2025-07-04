@@ -33,7 +33,8 @@ export default function ListingsPage() {
 
   useEffect(() => {
     if (!initialized) {
-      const categoryFromUrl = searchParams.get("category") || "new-building"
+      let categoryFromUrl = searchParams.get("property_status") || "new-building"
+      if (categoryFromUrl === "rent")  categoryFromUrl = "rentals"
       setActiveCategory(categoryFromUrl)
       initializeFromURL(searchParams)
       setInitialized(true)

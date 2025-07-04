@@ -34,6 +34,7 @@ import { FinancingGuaranteesModal } from "@/components/financing-guarantees-moda
 import { RiskAssessmentModal } from "@/components/risk-assessment-modal"
 import { CommercialNegotiationsModal } from "@/components/commercial-negotiations-modal"
 import { TransactionSupportModal } from "@/components/transaction-support-modal"
+import allLocations from "@/data/location.json";
 
 const categories = [
   {
@@ -87,24 +88,12 @@ const categories = [
 ]
 
 const propertyTypes = [
-  { value: "new-buildings", label: "New Buildings" },
+  { value: "", label: "New Buildings" },
   { value: "secondary", label: "Secondary" },
-  { value: "for-rent", label: "For Rent" },
+  { value: "rent", label: "For Rent" },
 ]
 
-const popularLocations = [
-  "Marbella",
-  "Barcelona",
-  "Madrid",
-  "Valencia",
-  "Ibiza",
-  "Mallorca",
-  "Seville",
-  "Malaga",
-  "Granada",
-  "Alicante",
-]
-
+const popularLocations = allLocations;
 const MAX_LOCATIONS = 3
 
 function SearchComponent() {
@@ -164,11 +153,11 @@ function SearchComponent() {
     const params = new URLSearchParams()
 
     if (selectedLocations.length > 0) {
-      params.set("locations", selectedLocations.join(","))
+      params.set("town", selectedLocations.join(","))
     }
 
     if (selectedType) {
-      params.set("type", selectedType)
+      params.set("property_status", selectedType)
     }
 
     if (searchQuery.trim()) {

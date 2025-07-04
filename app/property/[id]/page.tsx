@@ -205,6 +205,7 @@ export default function NewBuildingPage({ params }: NewBuildingPageProps) {
     )
   }
 
+  console.log(project)
   const currentUrl = typeof window !== "undefined" ? window.location.href : ""
 
   return (
@@ -215,7 +216,7 @@ export default function NewBuildingPage({ params }: NewBuildingPageProps) {
         {/* Navigation Bar */}
         <div className="flex items-center justify-between mb-4">
           <button
-            onClick={handleBack}
+            onClick={() => window.close()}
             className="inline-flex items-center text-gray-600 hover:text-gray-900 transition-colors font-light text-sm"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
@@ -295,9 +296,13 @@ export default function NewBuildingPage({ params }: NewBuildingPageProps) {
                   <p className="text-lg text-gray-600 font-light">{project.urbanisation_name}</p>
                 )}
 
-                <div className="text-xl lg:text-2xl font-light text-gray-900">
-                  {formatPrice(project.price, project.price_to, project.currency)}
-                </div>
+                  {
+                    project.property_status == "rent" ? <>
+                    {project.shortterm_low !== 0 && <div className="text-xl lg:text-2xl font-light text-gray-900">Shortterm low: ${project.shortterm_low}</div>}
+                    {project.shortterm_high !== 0 && <div className="text-xl lg:text-2xl font-light text-gray-900">Shortterm high: ${project.shortterm_high}</div>}
+                    {project.longterm !== 0 && <div className="text-xl lg:text-2xl font-light text-gray-900">Longterm: ${project.longterm}</div>}</>
+                    :<div className="text-xl lg:text-2xl font-light text-gray-900">{formatPrice(project.price, project.price_to, project.currency)}</div>
+                  }
 
                 <div className="flex items-center text-gray-600">
                   <MapPin className="h-4 w-4 mr-2" />
@@ -475,11 +480,11 @@ export default function NewBuildingPage({ params }: NewBuildingPageProps) {
                 </div>
               </div>
 
-              <ProjectMap
+              {project.property_status === "new building" && <ProjectMap
                 latitude={project.latitude}
                 longitude={project.longitude}
                 projectName={project.development_name}
-              />
+              />}
             </div>
 
             <div className="lg:col-span-1">
